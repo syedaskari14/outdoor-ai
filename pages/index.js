@@ -157,7 +157,7 @@ class ContractorAI {
   }
 }
 
-// Enhanced Pool with Physics-Based Water Simulation - FIXED
+// Enhanced Pool with Physics-Based Water Simulation - WATER VISIBLE FIX
 function Pool({ position = [0, 0, 0], size = [16, 8, 6], color = '#0066cc', onSelect, finish = 'plaster', timeOfDay = 'sunset' }) {
   const [hovered, setHovered] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
@@ -168,7 +168,7 @@ function Pool({ position = [0, 0, 0], size = [16, 8, 6], color = '#0066cc', onSe
   useFrame((state) => {
     if (waterRef.current) {
       // Subtle water movement
-      waterRef.current.position.y = 0.05 + Math.sin(state.clock.elapsedTime * 0.5) * 0.02;
+      waterRef.current.position.y = 0.15 + Math.sin(state.clock.elapsedTime * 0.5) * 0.02;
       waterRef.current.rotation.z = Math.sin(state.clock.elapsedTime * 0.2) * 0.005;
     }
     
@@ -237,8 +237,8 @@ function Pool({ position = [0, 0, 0], size = [16, 8, 6], color = '#0066cc', onSe
 
       {/* Pool shell with finish materials */}
       <Box
-        args={[size[0], 1.8, size[1]]}
-        position={[0, -0.9, 0]}
+        args={[size[0], 1.6, size[1]]}
+        position={[0, -0.8, 0]}
         onClick={onSelect}
         onPointerOver={() => setHovered(true)}
         onPointerOut={() => setHovered(false)}
@@ -252,34 +252,8 @@ function Pool({ position = [0, 0, 0], size = [16, 8, 6], color = '#0066cc', onSe
         />
       </Box>
       
-      {/* Pool water - VISIBLE at surface */}
-      <Plane
-        ref={waterRef}
-        args={[size[0] - 0.5, size[1] - 0.5]}
-        position={[0, 0.05, 0]}
-        rotation={[-Math.PI / 2, 0, 0]}
-      >
-        <meshStandardMaterial 
-          color={currentWaterColor}
-          transparent
-          opacity={0.7}
-          roughness={0.01}
-          metalness={0.1}
-          envMapIntensity={2.0}
-        />
-      </Plane>
-      
-      {/* Pool steps with finish color */}
-      <Box args={[3, 1, 1]} position={[size[0]/2 - 1.5, -0.5, size[1]/2 - 0.5]}>
-        <meshStandardMaterial 
-          color={currentFinish.shell} 
-          roughness={currentFinish.roughness}
-          metalness={currentFinish.metalness}
-        />
-      </Box>
-      
-      {/* Pool coping - different from finish */}
-      <Box args={[size[0] + 1, 0.2, size[1] + 1]} position={[0, 0.1, 0]}>
+      {/* Pool coping - SMALLER so water shows */}
+      <Box args={[size[0] + 0.5, 0.1, size[1] + 0.5]} position={[0, 0.05, 0]}>
         <meshStandardMaterial 
           color="#d4af9a" 
           roughness={0.8} 
@@ -287,8 +261,34 @@ function Pool({ position = [0, 0, 0], size = [16, 8, 6], color = '#0066cc', onSe
         />
       </Box>
       
+      {/* WATER - CLEARLY VISIBLE ABOVE EVERYTHING */}
+      <Plane
+        ref={waterRef}
+        args={[size[0] - 1, size[1] - 1]}
+        position={[0, 0.15, 0]}
+        rotation={[-Math.PI / 2, 0, 0]}
+      >
+        <meshStandardMaterial 
+          color={currentWaterColor}
+          transparent
+          opacity={0.8}
+          roughness={0.0}
+          metalness={0.1}
+          envMapIntensity={2.0}
+        />
+      </Plane>
+      
+      {/* Pool steps with finish color */}
+      <Box args={[2, 0.8, 0.8]} position={[size[0]/2 - 1, -0.4, size[1]/2 - 0.4]}>
+        <meshStandardMaterial 
+          color={currentFinish.shell} 
+          roughness={currentFinish.roughness}
+          metalness={currentFinish.metalness}
+        />
+      </Box>
+      
       {/* Pool equipment */}
-      <Cylinder args={[0.4, 0.4, 0.8]} position={[size[0]/2 + 1.5, 0.4, size[1]/2]}>
+      <Cylinder args={[0.3, 0.3, 0.6]} position={[size[0]/2 + 1.2, 0.3, size[1]/2]}>
         <meshStandardMaterial 
           color="#666666" 
           roughness={0.3}
@@ -296,34 +296,34 @@ function Pool({ position = [0, 0, 0], size = [16, 8, 6], color = '#0066cc', onSe
         />
       </Cylinder>
 
-      {/* LED lights */}
-      <Sphere args={[0.15]} position={[size[0]/3, -0.3, size[1]/3]}>
+      {/* LED lights UNDERWATER */}
+      <Sphere args={[0.1]} position={[size[0]/4, 0.0, size[1]/4]}>
         <meshStandardMaterial 
           color="#ffffff" 
           emissive="#4a90e2" 
-          emissiveIntensity={0.5}
+          emissiveIntensity={0.8}
         />
       </Sphere>
-      <Sphere args={[0.15]} position={[-size[0]/3, -0.3, -size[1]/3]}>
+      <Sphere args={[0.1]} position={[-size[0]/4, 0.0, -size[1]/4]}>
         <meshStandardMaterial 
           color="#ffffff" 
           emissive="#4a90e2" 
-          emissiveIntensity={0.5}
+          emissiveIntensity={0.8}
         />
       </Sphere>
       
-      {/* Pool lighting */}
+      {/* Pool lighting effects */}
       <pointLight 
-        position={[size[0]/3, 0, size[1]/3]} 
+        position={[size[0]/4, 0.2, size[1]/4]} 
         color="#4a90e2" 
-        intensity={0.3} 
-        distance={8}
+        intensity={0.5} 
+        distance={10}
       />
       <pointLight 
-        position={[-size[0]/3, 0, -size[1]/3]} 
+        position={[-size[0]/4, 0.2, -size[1]/4]} 
         color="#4a90e2" 
-        intensity={0.3} 
-        distance={8}
+        intensity={0.5} 
+        distance={10}
       />
     </group>
   );
