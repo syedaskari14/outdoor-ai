@@ -1,7 +1,6 @@
 import React, { useState, useCallback, Suspense } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Environment, ContactShadows, Box, Plane, Sphere, Cylinder } from '@react-three/drei';
-import { useDropzone } from 'react-dropzone';
 import * as THREE from 'three';
 
 // Enhanced AI Processing with Address & Property Data
@@ -2464,6 +2463,9 @@ export default function BackyardAI() {
         borderBottom: '1px solid #475569',
         boxShadow: '0 10px 30px rgba(0,0,0,0.3)'
       }}>
+        {/* Add favicon meta tag */}
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏊</text></svg>" />
+        
         <div style={{
           maxWidth: '1400px',
           margin: '0 auto',
