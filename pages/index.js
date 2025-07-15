@@ -1028,11 +1028,11 @@ function Scene({ designData, aiResults, onPoolSelect, hardscapeElements, landsca
       <OrbitControls enablePan enableZoom enableRotate />
       <Environment preset={currentLighting.environment} />
       <ContactShadows 
-        opacity={0.4} 
-        scale={80} 
-        blur={2} 
-        far={20} 
-        resolution={2048} 
+        opacity={0.3} 
+        scale={60} 
+        blur={1.5} 
+        far={15} 
+        resolution={1024} 
         color="#000000" 
       />
       
@@ -1077,7 +1077,7 @@ function Scene({ designData, aiResults, onPoolSelect, hardscapeElements, landsca
       
       {/* Enhanced house structure with better materials */}
       <group position={[-30, 0, -25]}>
-        {/* House foundation with realistic concrete */}
+        {/* House foundation with realistic concrete - FIXED positioning */}
         <Box args={[25, 1, 20]} position={[0, 0.5, 0]}>
           <meshStandardMaterial 
             color="#8b7d6b" 
@@ -1090,7 +1090,6 @@ function Scene({ designData, aiResults, onPoolSelect, hardscapeElements, landsca
           <meshStandardMaterial 
             color="#d4af9a" 
             roughness={0.8}
-            normalScale={[0.3, 0.3]}
           />
         </Box>
         {/* Roof with realistic shingles */}
@@ -1098,7 +1097,6 @@ function Scene({ designData, aiResults, onPoolSelect, hardscapeElements, landsca
           <meshStandardMaterial 
             color="#8B4513" 
             roughness={0.9}
-            normalScale={[0.5, 0.5]}
           />
         </Box>
         {/* Windows with realistic glass */}
@@ -1125,7 +1123,6 @@ function Scene({ designData, aiResults, onPoolSelect, hardscapeElements, landsca
           <meshStandardMaterial 
             color="#8B4513" 
             roughness={0.8}
-            normalScale={[0.7, 0.7]}
           />
         </Box>
       </group>
@@ -1142,6 +1139,7 @@ function Scene({ designData, aiResults, onPoolSelect, hardscapeElements, landsca
       {/* Enhanced Pool with time-of-day effects */}
       {designData.pool && (
         <Pool 
+          key={`pool-${designData.pool.finish}-${designData.pool.size[0]}-${designData.pool.size[1]}`}
           position={designData.pool.position}
           size={designData.pool.size}
           color={designData.pool.color}
@@ -1738,6 +1736,7 @@ export default function BackyardAI() {
   }, [photos, address]);
 
   const handleDesignUpdate = useCallback((category, property, value) => {
+    console.log('Design update:', category, property, value); // Debug log
     setDesignData(prev => {
       if (category === 'pool' && prev.pool) {
         const updatedPool = { ...prev.pool };
@@ -1745,9 +1744,12 @@ export default function BackyardAI() {
           updatedPool.size = [value, updatedPool.size[1], updatedPool.size[2]];
         } else if (property === 'width') {
           updatedPool.size = [updatedPool.size[0], value, updatedPool.size[2]];
+        } else if (property === 'finish') {
+          updatedPool.finish = value;
         } else {
           updatedPool[property] = value;
         }
+        console.log('Updated pool data:', updatedPool); // Debug log
         return { ...prev, pool: updatedPool };
       }
       return prev;
