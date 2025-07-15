@@ -168,7 +168,7 @@ function Pool({ position = [0, 0, 0], size = [16, 8, 6], color = '#0066cc', onSe
   useFrame((state) => {
     if (waterRef.current) {
       // Subtle water movement
-      waterRef.current.position.y = 0.1 + Math.sin(state.clock.elapsedTime * 0.5) * 0.02;
+      waterRef.current.position.y = 0.05 + Math.sin(state.clock.elapsedTime * 0.5) * 0.02;
       waterRef.current.rotation.z = Math.sin(state.clock.elapsedTime * 0.2) * 0.005;
     }
     
@@ -183,25 +183,25 @@ function Pool({ position = [0, 0, 0], size = [16, 8, 6], color = '#0066cc', onSe
   
   const finishes = {
     plaster: { 
-      shell: '#f0f8ff', 
+      shell: '#ffffff', 
       description: 'White Plaster',
       roughness: 0.7,
       metalness: 0.0
     },
     pebble: { 
-      shell: '#8fbc8f', 
+      shell: '#4a7c59', 
       description: 'Pebble Tec',
       roughness: 0.9,
       metalness: 0.0
     },
     tile: { 
-      shell: '#4169e1', 
+      shell: '#1e3a8a', 
       description: 'Ceramic Tile',
       roughness: 0.1,
-      metalness: 0.3
+      metalness: 0.4
     },
     fiberglass: { 
-      shell: '#87ceeb', 
+      shell: '#0ea5e9', 
       description: 'Fiberglass',
       roughness: 0.2,
       metalness: 0.1
@@ -223,9 +223,11 @@ function Pool({ position = [0, 0, 0], size = [16, 8, 6], color = '#0066cc', onSe
   
   const currentWaterColor = waterColors[timeOfDay] || waterColors.sunset;
   
+  console.log('Pool render - finish:', finish, 'shell color:', currentFinish.shell); // Debug
+  
   return (
     <group position={position}>
-      {/* Pool excavation hole - FIXED positioning */}
+      {/* Pool excavation hole */}
       <Box
         args={[size[0] + 2, 2, size[1] + 2]}
         position={[0, -1, 0]}
@@ -233,7 +235,7 @@ function Pool({ position = [0, 0, 0], size = [16, 8, 6], color = '#0066cc', onSe
         <meshStandardMaterial color="#654321" roughness={0.9} />
       </Box>
 
-      {/* Pool shell with realistic finish materials - FIXED */}
+      {/* Pool shell with finish materials */}
       <Box
         args={[size[0], 1.8, size[1]]}
         position={[0, -0.9, 0]}
@@ -250,7 +252,7 @@ function Pool({ position = [0, 0, 0], size = [16, 8, 6], color = '#0066cc', onSe
         />
       </Box>
       
-      {/* Pool water - FIXED to be at surface level */}
+      {/* Pool water - VISIBLE at surface */}
       <Plane
         ref={waterRef}
         args={[size[0] - 0.5, size[1] - 0.5]}
@@ -260,28 +262,14 @@ function Pool({ position = [0, 0, 0], size = [16, 8, 6], color = '#0066cc', onSe
         <meshStandardMaterial 
           color={currentWaterColor}
           transparent
-          opacity={0.8}
+          opacity={0.7}
           roughness={0.01}
           metalness={0.1}
           envMapIntensity={2.0}
         />
       </Plane>
       
-      {/* Animated caustics on pool bottom - FIXED */}
-      <Plane
-        ref={causticsRef}
-        args={[size[0] - 1, size[1] - 1]}
-        position={[0, -0.8, 0]}
-        rotation={[-Math.PI / 2, 0, 0]}
-      >
-        <meshStandardMaterial 
-          color="#ffffff"
-          transparent
-          opacity={0.2}
-        />
-      </Plane>
-      
-      {/* Pool steps/entry - FIXED positioning */}
+      {/* Pool steps with finish color */}
       <Box args={[3, 1, 1]} position={[size[0]/2 - 1.5, -0.5, size[1]/2 - 0.5]}>
         <meshStandardMaterial 
           color={currentFinish.shell} 
@@ -290,16 +278,16 @@ function Pool({ position = [0, 0, 0], size = [16, 8, 6], color = '#0066cc', onSe
         />
       </Box>
       
-      {/* Premium coping - natural travertine - FIXED to be at ground level */}
+      {/* Pool coping - different from finish */}
       <Box args={[size[0] + 1, 0.2, size[1] + 1]} position={[0, 0.1, 0]}>
         <meshStandardMaterial 
-          color="#f5deb3" 
+          color="#d4af9a" 
           roughness={0.8} 
           metalness={0.0}
         />
       </Box>
       
-      {/* Pool equipment - FIXED positioning */}
+      {/* Pool equipment */}
       <Cylinder args={[0.4, 0.4, 0.8]} position={[size[0]/2 + 1.5, 0.4, size[1]/2]}>
         <meshStandardMaterial 
           color="#666666" 
@@ -308,14 +296,12 @@ function Pool({ position = [0, 0, 0], size = [16, 8, 6], color = '#0066cc', onSe
         />
       </Cylinder>
 
-      {/* Enhanced underwater LED lights - FIXED positioning */}
+      {/* LED lights */}
       <Sphere args={[0.15]} position={[size[0]/3, -0.3, size[1]/3]}>
         <meshStandardMaterial 
           color="#ffffff" 
           emissive="#4a90e2" 
           emissiveIntensity={0.5}
-          transparent
-          opacity={0.8}
         />
       </Sphere>
       <Sphere args={[0.15]} position={[-size[0]/3, -0.3, -size[1]/3]}>
@@ -323,12 +309,10 @@ function Pool({ position = [0, 0, 0], size = [16, 8, 6], color = '#0066cc', onSe
           color="#ffffff" 
           emissive="#4a90e2" 
           emissiveIntensity={0.5}
-          transparent
-          opacity={0.8}
         />
       </Sphere>
       
-      {/* Pool lighting effects - FIXED positioning */}
+      {/* Pool lighting */}
       <pointLight 
         position={[size[0]/3, 0, size[1]/3]} 
         color="#4a90e2" 
