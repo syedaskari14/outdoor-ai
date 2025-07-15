@@ -409,16 +409,47 @@ function LandscapeElement({ type, position, onSelect, selected, onDrag }) {
   );
 }
 
-// Enhanced Photo Upload with Address Input
+// Enhanced Photo Upload with Smart Address Auto-Complete
 function PhotoUpload({ onUpload, photos, onAddressChange, address }) {
+  const [addressSuggestions, setAddressSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     accept: { 'image/*': [] },
     maxFiles: 10,
     onDrop: onUpload
   });
 
+  // Mock address suggestions (in real app, would use Google Places API)
+  const handleAddressInput = (value) => {
+    onAddressChange(value);
+    
+    if (value.length > 3) {
+      // Simulate API call to Google Places Autocomplete
+      const mockSuggestions = [
+        `${value} Street, Atlanta, GA 30309`,
+        `${value} Avenue, Atlanta, GA 30307`,
+        `${value} Road, Decatur, GA 30030`,
+        `${value} Drive, Sandy Springs, GA 30328`,
+        `${value} Lane, Brookhaven, GA 30319`
+      ].filter(suggestion => 
+        suggestion.toLowerCase().includes(value.toLowerCase())
+      );
+      
+      setAddressSuggestions(mockSuggestions.slice(0, 5));
+      setShowSuggestions(true);
+    } else {
+      setShowSuggestions(false);
+    }
+  };
+
+  const selectAddress = (selectedAddress) => {
+    onAddressChange(selectedAddress);
+    setShowSuggestions(false);
+  };
+
   return (
-    <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+    <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
       {/* Address Input Section */}
       <div style={{
         background: 'linear-gradient(145deg, #1e293b 0%, #334155 100%)',
@@ -440,7 +471,15 @@ function PhotoUpload({ onUpload, photos, onAddressChange, address }) {
             type="text"
             placeholder="Enter property address (e.g., 123 Main St, Atlanta, GA 30309)"
             value={address}
-            onChange={(e) => onAddressChange(e.target.value)}
+            onChange={(e) => handleAddressInput(e.target.value)}
+            onFocus={(e) => {
+              e.target.style.borderColor = '#3b82f6';
+              if (address.length > 3) setShowSuggestions(true);
+            }}
+            onBlur={(e) => {
+              e.target.style.borderColor = '#475569';
+              setTimeout(() => setShowSuggestions(false), 200);
+            }}
             style={{
               width: '100%',
               padding: '16px 20px',
@@ -453,8 +492,6 @@ function PhotoUpload({ onUpload, photos, onAddressChange, address }) {
               outline: 'none',
               transition: 'all 0.3s ease'
             }}
-            onFocus={(e) => e.target.style.borderColor = '#3b82f6'}
-            onBlur={(e) => e.target.style.borderColor = '#475569'}
           />
           <div style={{
             position: 'absolute',
@@ -466,6 +503,42 @@ function PhotoUpload({ onUpload, photos, onAddressChange, address }) {
           }}>
             📍
           </div>
+
+          {/* Address Suggestions Dropdown */}
+          {showSuggestions && addressSuggestions.length > 0 && (
+            <div style={{
+              position: 'absolute',
+              top: '100%',
+              left: 0,
+              right: 0,
+              background: 'linear-gradient(135deg, #334155 0%, #475569 100%)',
+              borderRadius: '12px',
+              border: '1px solid #64748b',
+              marginTop: '4px',
+              zIndex: 1000,
+              maxHeight: '200px',
+              overflowY: 'auto',
+              boxShadow: '0 10px 25px rgba(0,0,0,0.3)'
+            }}>
+              {addressSuggestions.map((suggestion, index) => (
+                <div
+                  key={index}
+                  onClick={() => selectAddress(suggestion)}
+                  style={{
+                    padding: '12px 16px',
+                    color: '#f1f5f9',
+                    cursor: 'pointer',
+                    borderBottom: index < addressSuggestions.length - 1 ? '1px solid #64748b' : 'none',
+                    transition: 'background-color 0.2s ease'
+                  }}
+                  onMouseEnter={(e) => e.target.style.backgroundColor = 'rgba(59, 130, 246, 0.2)'}
+                  onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
+                >
+                  📍 {suggestion}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
         
         {address && (
@@ -1370,10 +1443,10 @@ export default function BackyardAI() {
         {step === 'design' && (
           <div style={{ 
             display: 'grid', 
-            gridTemplateColumns: window.innerWidth > 1024 ? '1fr 400px' : '1fr',
+            gridTemplateColumns: window.innerWidth > 1200 ? '2fr 400px' : window.innerWidth > 768 ? '1.5fr 350px' : '1fr',
             gap: '30px'
           }}>
-            {/* 3D Viewer */}
+            {/* 3D Viewer - Now Much Larger */}
             <div>
               <div style={{
                 background: 'linear-gradient(145deg, #1e293b 0%, #334155 100%)',
@@ -1382,7 +1455,9 @@ export default function BackyardAI() {
                 border: '1px solid #475569',
                 boxShadow: '0 20px 60px rgba(0,0,0,0.3)'
               }}>
-                <div style={{ height: window.innerWidth > 768 ? '700px' : '400px' }}>
+                <div style={{ 
+                  height: window.innerWidth > 1200 ? '800px' : window.innerWidth > 768 ? '600px' : '400px' 
+                }}>
                   <Canvas camera={{ position: [30, 20, 30], fov: 50 }}>
                     <Suspense fallback={null}>
                       <Scene 
