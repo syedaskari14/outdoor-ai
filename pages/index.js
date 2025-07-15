@@ -157,7 +157,7 @@ class ContractorAI {
   }
 }
 
-// Enhanced Pool with Physics-Based Water Simulation
+// Enhanced Pool with Physics-Based Water Simulation - FIXED
 function Pool({ position = [0, 0, 0], size = [16, 8, 6], color = '#0066cc', onSelect, finish = 'plaster', timeOfDay = 'sunset' }) {
   const [hovered, setHovered] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
@@ -183,27 +183,27 @@ function Pool({ position = [0, 0, 0], size = [16, 8, 6], color = '#0066cc', onSe
   
   const finishes = {
     plaster: { 
-      shell: '#e6f3ff', 
+      shell: '#f0f8ff', 
       description: 'White Plaster',
-      roughness: 0.6,
+      roughness: 0.7,
       metalness: 0.0
     },
     pebble: { 
-      shell: '#7fb069', 
+      shell: '#8fbc8f', 
       description: 'Pebble Tec',
       roughness: 0.9,
       metalness: 0.0
     },
     tile: { 
-      shell: '#4a90e2', 
+      shell: '#4169e1', 
       description: 'Ceramic Tile',
       roughness: 0.1,
-      metalness: 0.2
+      metalness: 0.3
     },
     fiberglass: { 
-      shell: '#5bc0de', 
+      shell: '#87ceeb', 
       description: 'Fiberglass',
-      roughness: 0.3,
+      roughness: 0.2,
       metalness: 0.1
     }
   };
@@ -225,18 +225,18 @@ function Pool({ position = [0, 0, 0], size = [16, 8, 6], color = '#0066cc', onSe
   
   return (
     <group position={position}>
-      {/* Pool excavation hole */}
+      {/* Pool excavation hole - FIXED positioning */}
       <Box
-        args={[size[0] + 2, 3, size[1] + 2]}
-        position={[0, -1.5, 0]}
+        args={[size[0] + 2, 2, size[1] + 2]}
+        position={[0, -1, 0]}
       >
-        <meshStandardMaterial color="#4a4a4a" roughness={0.9} />
+        <meshStandardMaterial color="#654321" roughness={0.9} />
       </Box>
 
-      {/* Pool shell with realistic finish materials */}
+      {/* Pool shell with realistic finish materials - FIXED */}
       <Box
-        args={[size[0], 2.5, size[1]]}
-        position={[0, -1.25, 0]}
+        args={[size[0], 1.8, size[1]]}
+        position={[0, -0.9, 0]}
         onClick={onSelect}
         onPointerOver={() => setHovered(true)}
         onPointerOut={() => setHovered(false)}
@@ -244,34 +244,34 @@ function Pool({ position = [0, 0, 0], size = [16, 8, 6], color = '#0066cc', onSe
         onPointerUp={() => setIsDragging(false)}
       >
         <meshStandardMaterial 
-          color={hovered || isDragging ? '#87ceeb' : currentFinish.shell}
+          color={hovered || isDragging ? '#ffff00' : currentFinish.shell}
           roughness={currentFinish.roughness}
           metalness={currentFinish.metalness}
         />
       </Box>
       
-      {/* Physics-based water with real-time effects */}
+      {/* Pool water - FIXED to be at surface level */}
       <Plane
         ref={waterRef}
         args={[size[0] - 0.5, size[1] - 0.5]}
-        position={[0, 0.1, 0]}
+        position={[0, 0.05, 0]}
         rotation={[-Math.PI / 2, 0, 0]}
       >
         <meshStandardMaterial 
           color={currentWaterColor}
           transparent
-          opacity={0.75}
+          opacity={0.8}
           roughness={0.01}
           metalness={0.1}
           envMapIntensity={2.0}
         />
       </Plane>
       
-      {/* Animated caustics on pool bottom */}
+      {/* Animated caustics on pool bottom - FIXED */}
       <Plane
         ref={causticsRef}
         args={[size[0] - 1, size[1] - 1]}
-        position={[0, -1.0, 0]}
+        position={[0, -0.8, 0]}
         rotation={[-Math.PI / 2, 0, 0]}
       >
         <meshStandardMaterial 
@@ -281,22 +281,25 @@ function Pool({ position = [0, 0, 0], size = [16, 8, 6], color = '#0066cc', onSe
         />
       </Plane>
       
-      {/* Pool steps/entry */}
-      <Box args={[3, 1.5, 1]} position={[size[0]/2 - 1.5, -0.75, size[1]/2 - 0.5]}>
-        <meshStandardMaterial color={currentFinish.shell} roughness={currentFinish.roughness} />
+      {/* Pool steps/entry - FIXED positioning */}
+      <Box args={[3, 1, 1]} position={[size[0]/2 - 1.5, -0.5, size[1]/2 - 0.5]}>
+        <meshStandardMaterial 
+          color={currentFinish.shell} 
+          roughness={currentFinish.roughness}
+          metalness={currentFinish.metalness}
+        />
       </Box>
       
-      {/* Premium coping - natural travertine with weathering */}
-      <Box args={[size[0] + 1.5, 0.3, size[1] + 1.5]} position={[0, 0.25, 0]}>
+      {/* Premium coping - natural travertine - FIXED to be at ground level */}
+      <Box args={[size[0] + 1, 0.2, size[1] + 1]} position={[0, 0.1, 0]}>
         <meshStandardMaterial 
           color="#f5deb3" 
           roughness={0.8} 
           metalness={0.0}
-          normalScale={[0.5, 0.5]}
         />
       </Box>
       
-      {/* Pool equipment with realistic materials */}
+      {/* Pool equipment - FIXED positioning */}
       <Cylinder args={[0.4, 0.4, 0.8]} position={[size[0]/2 + 1.5, 0.4, size[1]/2]}>
         <meshStandardMaterial 
           color="#666666" 
@@ -305,8 +308,8 @@ function Pool({ position = [0, 0, 0], size = [16, 8, 6], color = '#0066cc', onSe
         />
       </Cylinder>
 
-      {/* Enhanced underwater LED lights with glow effect */}
-      <Sphere args={[0.2]} position={[size[0]/3, -0.5, size[1]/3]}>
+      {/* Enhanced underwater LED lights - FIXED positioning */}
+      <Sphere args={[0.15]} position={[size[0]/3, -0.3, size[1]/3]}>
         <meshStandardMaterial 
           color="#ffffff" 
           emissive="#4a90e2" 
@@ -315,7 +318,7 @@ function Pool({ position = [0, 0, 0], size = [16, 8, 6], color = '#0066cc', onSe
           opacity={0.8}
         />
       </Sphere>
-      <Sphere args={[0.2]} position={[-size[0]/3, -0.5, -size[1]/3]}>
+      <Sphere args={[0.15]} position={[-size[0]/3, -0.3, -size[1]/3]}>
         <meshStandardMaterial 
           color="#ffffff" 
           emissive="#4a90e2" 
@@ -325,99 +328,176 @@ function Pool({ position = [0, 0, 0], size = [16, 8, 6], color = '#0066cc', onSe
         />
       </Sphere>
       
-      {/* Pool lighting effects */}
+      {/* Pool lighting effects - FIXED positioning */}
       <pointLight 
-        position={[size[0]/3, -0.3, size[1]/3]} 
+        position={[size[0]/3, 0, size[1]/3]} 
         color="#4a90e2" 
-        intensity={0.5} 
-        distance={5}
+        intensity={0.3} 
+        distance={8}
       />
       <pointLight 
-        position={[-size[0]/3, -0.3, -size[1]/3]} 
+        position={[-size[0]/3, 0, -size[1]/3]} 
         color="#4a90e2" 
-        intensity={0.5} 
-        distance={5}
+        intensity={0.3} 
+        distance={8}
       />
     </group>
   );
 }
 
-// Draggable Hardscape Elements
+// User-Friendly Hardscape Elements with Easy Drag Controls
 function HardscapeElement({ type, position, onSelect, selected, onDrag }) {
   const [isDragging, setIsDragging] = useState(false);
-  const [dragStart, setDragStart] = useState([0, 0]);
+  const [hovered, setHovered] = useState(false);
+  const meshRef = React.useRef();
   
   const elements = {
     deck: { 
       geometry: <Box args={[8, 0.2, 6]} />,
-      material: <meshStandardMaterial color={selected || isDragging ? "#8B4513" : "#DEB887"} roughness={0.8} />
+      material: <meshStandardMaterial 
+        color={selected || isDragging ? "#FF6B35" : hovered ? "#DEB887" : "#C4A484"} 
+        roughness={0.8}
+        emissive={isDragging ? "#FF6B35" : "#000000"}
+        emissiveIntensity={isDragging ? 0.2 : 0}
+      />
     },
     patio: {
       geometry: <Box args={[12, 0.15, 8]} />,
-      material: <meshStandardMaterial color={selected || isDragging ? "#696969" : "#A9A9A9"} roughness={0.9} />
+      material: <meshStandardMaterial 
+        color={selected || isDragging ? "#FF6B35" : hovered ? "#A9A9A9" : "#808080"} 
+        roughness={0.9}
+        emissive={isDragging ? "#FF6B35" : "#000000"}
+        emissiveIntensity={isDragging ? 0.2 : 0}
+      />
     },
     pathway: {
       geometry: <Box args={[20, 0.1, 3]} />,
-      material: <meshStandardMaterial color={selected || isDragging ? "#8B4513" : "#DEB887"} roughness={0.9} />
+      material: <meshStandardMaterial 
+        color={selected || isDragging ? "#FF6B35" : hovered ? "#DEB887" : "#C4A484"} 
+        roughness={0.9}
+        emissive={isDragging ? "#FF6B35" : "#000000"}
+        emissiveIntensity={isDragging ? 0.2 : 0}
+      />
     },
     retaining: {
       geometry: <Box args={[15, 3, 1]} />,
-      material: <meshStandardMaterial color={selected || isDragging ? "#2F4F4F" : "#708090"} roughness={0.8} />
+      material: <meshStandardMaterial 
+        color={selected || isDragging ? "#FF6B35" : hovered ? "#708090" : "#5F6A6B"} 
+        roughness={0.8}
+        emissive={isDragging ? "#FF6B35" : "#000000"}
+        emissiveIntensity={isDragging ? 0.2 : 0}
+      />
     },
     firepit: {
       geometry: <Cylinder args={[2, 2, 0.5]} />,
-      material: <meshStandardMaterial color={selected || isDragging ? "#8B0000" : "#A0522D"} roughness={0.6} />
+      material: <meshStandardMaterial 
+        color={selected || isDragging ? "#FF6B35" : hovered ? "#A0522D" : "#8B4513"} 
+        roughness={0.6}
+        emissive={isDragging ? "#FF6B35" : "#000000"}
+        emissiveIntensity={isDragging ? 0.2 : 0}
+      />
     }
   };
   
   const element = elements[type] || elements.deck;
   
   const handlePointerDown = (event) => {
-    setIsDragging(true);
-    setDragStart([event.point.x, event.point.z]);
     event.stopPropagation();
+    setIsDragging(true);
+    document.body.style.cursor = 'grabbing';
   };
   
   const handlePointerMove = (event) => {
     if (isDragging && onDrag) {
       const newPosition = [
-        event.point.x,
+        Math.round(event.point.x),
         position[1],
-        event.point.z
+        Math.round(event.point.z)
       ];
       onDrag(type, newPosition);
     }
   };
   
-  const handlePointerUp = () => {
+  const handlePointerUp = (event) => {
+    event.stopPropagation();
     setIsDragging(false);
+    document.body.style.cursor = 'default';
     if (onSelect) onSelect(type);
+  };
+
+  const handlePointerEnter = () => {
+    setHovered(true);
+    if (!isDragging) {
+      document.body.style.cursor = 'grab';
+    }
+  };
+
+  const handlePointerLeave = () => {
+    setHovered(false);
+    if (!isDragging) {
+      document.body.style.cursor = 'default';
+    }
   };
   
   return (
     <group 
+      ref={meshRef}
       position={position}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
-      style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
+      onPointerEnter={handlePointerEnter}
+      onPointerLeave={handlePointerLeave}
     >
       {React.cloneElement(element.geometry, {
         children: element.material
       })}
-      {/* Visual feedback when dragging */}
+      
+      {/* Enhanced visual feedback when dragging */}
       {isDragging && (
-        <Box args={[0.5, 8, 0.5]} position={[0, 4, 0]}>
-          <meshStandardMaterial color="#00ff00" transparent opacity={0.6} />
-        </Box>
+        <>
+          <Box args={[0.5, 10, 0.5]} position={[0, 5, 0]}>
+            <meshStandardMaterial 
+              color="#00ff00" 
+              transparent 
+              opacity={0.7}
+              emissive="#00ff00"
+              emissiveIntensity={0.5}
+            />
+          </Box>
+          <Sphere args={[1]} position={[0, 1, 0]}>
+            <meshStandardMaterial 
+              color="#00ff00" 
+              transparent 
+              opacity={0.3}
+              emissive="#00ff00"
+              emissiveIntensity={0.3}
+            />
+          </Sphere>
+        </>
+      )}
+
+      {/* Hover glow effect */}
+      {hovered && !isDragging && (
+        <Sphere args={[Math.max(...element.geometry.props.args) + 1]} position={[0, 0.5, 0]}>
+          <meshStandardMaterial 
+            color="#4a90e2" 
+            transparent 
+            opacity={0.1}
+            emissive="#4a90e2"
+            emissiveIntensity={0.1}
+          />
+        </Sphere>
       )}
     </group>
   );
 }
 
-// Enhanced Landscape Elements with Seasonal Variations
+// User-Friendly Landscape Elements with Easy Drag Controls
 function LandscapeElement({ type, position, onSelect, selected, onDrag, seasonalColors }) {
   const [isDragging, setIsDragging] = useState(false);
+  const [hovered, setHovered] = useState(false);
+  const meshRef = React.useRef();
   
   const elements = {
     tree: (
@@ -426,14 +506,16 @@ function LandscapeElement({ type, position, onSelect, selected, onDrag, seasonal
           <meshStandardMaterial 
             color="#8B4513" 
             roughness={0.9}
-            normalScale={[0.8, 0.8]}
+            emissive={isDragging ? "#FF6B35" : "#000000"}
+            emissiveIntensity={isDragging ? 0.1 : 0}
           />
         </Cylinder>
         <Sphere args={[2.5]} position={[0, 5, 0]}>
           <meshStandardMaterial 
-            color={selected || isDragging ? "#32CD32" : seasonalColors?.trees || "#228B22"} 
+            color={selected || isDragging ? "#32CD32" : hovered ? "#90EE90" : seasonalColors?.trees || "#228B22"} 
             roughness={0.8}
-            normalScale={[0.3, 0.3]}
+            emissive={isDragging ? "#32CD32" : "#000000"}
+            emissiveIntensity={isDragging ? 0.2 : 0}
           />
         </Sphere>
       </group>
@@ -441,9 +523,10 @@ function LandscapeElement({ type, position, onSelect, selected, onDrag, seasonal
     shrub: (
       <Sphere args={[1]} position={[0, 1, 0]}>
         <meshStandardMaterial 
-          color={selected || isDragging ? "#90EE90" : seasonalColors?.trees || "#6B8E23"} 
+          color={selected || isDragging ? "#90EE90" : hovered ? "#ADFF2F" : seasonalColors?.trees || "#6B8E23"} 
           roughness={0.9}
-          normalScale={[0.5, 0.5]}
+          emissive={isDragging ? "#90EE90" : "#000000"}
+          emissiveIntensity={isDragging ? 0.2 : 0}
         />
       </Sphere>
     ),
@@ -451,17 +534,18 @@ function LandscapeElement({ type, position, onSelect, selected, onDrag, seasonal
       <group>
         <Cylinder args={[0.8, 0.8, 0.3]} position={[0, 0.15, 0]}>
           <meshStandardMaterial 
-            color={selected || isDragging ? "#FFB6C1" : seasonalColors?.flowers || "#FF69B4"} 
+            color={selected || isDragging ? "#FFB6C1" : hovered ? "#FF1493" : seasonalColors?.flowers || "#FF69B4"} 
             roughness={0.3}
             emissive={seasonalColors?.flowers || "#FF69B4"}
-            emissiveIntensity={0.1}
+            emissiveIntensity={isDragging ? 0.3 : 0.1}
           />
         </Cylinder>
         <Cylinder args={[1.2, 1.2, 0.2]} position={[0, 0.4, 0]}>
           <meshStandardMaterial 
             color={seasonalColors?.grass || "#32CD32"} 
             roughness={0.8}
-            normalScale={[0.4, 0.4]}
+            emissive={isDragging ? "#32CD32" : "#000000"}
+            emissiveIntensity={isDragging ? 0.1 : 0}
           />
         </Cylinder>
       </group>
@@ -469,55 +553,100 @@ function LandscapeElement({ type, position, onSelect, selected, onDrag, seasonal
     grass: (
       <Box args={[4, 0.05, 4]} position={[0, 0.025, 0]}>
         <meshStandardMaterial 
-          color={selected || isDragging ? "#ADFF2F" : seasonalColors?.grass || "#228B22"} 
+          color={selected || isDragging ? "#ADFF2F" : hovered ? "#7CFC00" : seasonalColors?.grass || "#228B22"} 
           roughness={0.95}
-          normalScale={[0.2, 0.2]}
+          emissive={isDragging ? "#ADFF2F" : "#000000"}
+          emissiveIntensity={isDragging ? 0.2 : 0}
         />
       </Box>
     )
   };
   
   const handlePointerDown = (event) => {
-    setIsDragging(true);
     event.stopPropagation();
+    setIsDragging(true);
+    document.body.style.cursor = 'grabbing';
   };
   
   const handlePointerMove = (event) => {
     if (isDragging && onDrag) {
       const newPosition = [
-        event.point.x,
+        Math.round(event.point.x),
         position[1],
-        event.point.z
+        Math.round(event.point.z)
       ];
       onDrag(type, newPosition);
     }
   };
   
-  const handlePointerUp = () => {
+  const handlePointerUp = (event) => {
+    event.stopPropagation();
     setIsDragging(false);
+    document.body.style.cursor = 'default';
     if (onSelect) onSelect(type);
+  };
+
+  const handlePointerEnter = () => {
+    setHovered(true);
+    if (!isDragging) {
+      document.body.style.cursor = 'grab';
+    }
+  };
+
+  const handlePointerLeave = () => {
+    setHovered(false);
+    if (!isDragging) {
+      document.body.style.cursor = 'default';
+    }
   };
   
   return (
     <group 
+      ref={meshRef}
       position={position}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
-      style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
+      onPointerEnter={handlePointerEnter}
+      onPointerLeave={handlePointerLeave}
     >
       {elements[type] || elements.shrub}
-      {/* Visual feedback when dragging */}
+      
+      {/* Enhanced visual feedback when dragging */}
       {isDragging && (
-        <Box args={[0.2, 5, 0.2]} position={[0, 2.5, 0]}>
+        <>
+          <Box args={[0.3, 8, 0.3]} position={[0, 4, 0]}>
+            <meshStandardMaterial 
+              color="#ffff00" 
+              transparent 
+              opacity={0.8}
+              emissive="#ffff00"
+              emissiveIntensity={0.6}
+            />
+          </Box>
+          <Sphere args={[0.8]} position={[0, 0.5, 0]}>
+            <meshStandardMaterial 
+              color="#ffff00" 
+              transparent 
+              opacity={0.3}
+              emissive="#ffff00"
+              emissiveIntensity={0.3}
+            />
+          </Sphere>
+        </>
+      )}
+
+      {/* Hover glow effect */}
+      {hovered && !isDragging && (
+        <Sphere args={[3]} position={[0, 2, 0]}>
           <meshStandardMaterial 
-            color="#ffff00" 
+            color="#32CD32" 
             transparent 
-            opacity={0.7}
-            emissive="#ffff00"
-            emissiveIntensity={0.3}
+            opacity={0.1}
+            emissive="#32CD32"
+            emissiveIntensity={0.1}
           />
-        </Box>
+        </Sphere>
       )}
     </group>
   );
@@ -549,62 +678,95 @@ function PhotoUpload({ onUpload, photos, onAddressChange, address, isMobile }) {
 
   const fetchAddressSuggestions = async (input) => {
     try {
-      // For now, provide smart mock suggestions based on common patterns
-      // In production, you'd create an API route to call Google Places
+      console.log('Fetching address suggestions for:', input);
       
-      const commonStreets = ['Main', 'Oak', 'Park', 'First', 'Second', 'Third', 'Elm', 'Maple', 'Washington', 'Lincoln'];
-      const streetTypes = ['Street', 'Avenue', 'Road', 'Drive', 'Lane', 'Circle', 'Court', 'Way'];
-      const cities = [
-        { name: 'Atlanta', zip: '30309' },
-        { name: 'Decatur', zip: '30030' },
-        { name: 'Sandy Springs', zip: '30328' },
-        { name: 'Marietta', zip: '30060' },
-        { name: 'Roswell', zip: '30075' },
-        { name: 'Brookhaven', zip: '30319' },
-        { name: 'Dunwoody', zip: '30338' }
-      ];
+      // Call our Next.js API route
+      const response = await fetch('/api/places-autocomplete', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ input })
+      });
 
-      let suggestions = [];
+      const data = await response.json();
 
-      // If input looks like a number, suggest house numbers
-      if (/^\d+/.test(input)) {
-        const number = input.match(/^\d+/)[0];
-        suggestions = cities.slice(0, 5).map((city, index) => 
-          `${number} ${commonStreets[index]} ${streetTypes[index % streetTypes.length]}, ${city.name}, GA ${city.zip}`
-        );
-      }
-      // If input looks like a street name
-      else if (input.length > 2) {
-        const matchingStreets = commonStreets.filter(street => 
-          street.toLowerCase().startsWith(input.toLowerCase())
-        );
-        
-        if (matchingStreets.length > 0) {
-          suggestions = matchingStreets.slice(0, 3).flatMap(street => 
-            cities.slice(0, 2).map(city => 
-              `${Math.floor(Math.random() * 9000) + 1000} ${street} Street, ${city.name}, GA ${city.zip}`
-            )
-          ).slice(0, 5);
-        } else {
-          // Fallback suggestions
-          suggestions = [
-            `${input} Street, Atlanta, GA 30309`,
-            `${input} Avenue, Decatur, GA 30030`,
-            `${input} Road, Sandy Springs, GA 30328`,
-            `${input} Drive, Marietta, GA 30060`,
-            `${input} Lane, Roswell, GA 30075`
-          ];
-        }
+      if (!response.ok) {
+        console.error('API Error:', data.error);
+        // Fallback to smart suggestions if API fails
+        provideFallbackSuggestions(input);
+        return;
       }
 
-      if (suggestions.length > 0) {
-        setAddressSuggestions(suggestions);
+      if (data.predictions && data.predictions.length > 0) {
+        const suggestions = data.predictions.map(prediction => prediction.description);
+        setAddressSuggestions(suggestions.slice(0, 5));
         setShowSuggestions(true);
+        console.log('Google Places suggestions:', suggestions);
       } else {
-        setShowSuggestions(false);
+        console.log('No Google Places suggestions found');
+        // Provide fallback suggestions
+        provideFallbackSuggestions(input);
       }
     } catch (error) {
-      console.log('Error generating address suggestions:', error);
+      console.error('Error fetching Google Places suggestions:', error);
+      // Fallback to smart suggestions
+      provideFallbackSuggestions(input);
+    }
+  };
+
+  const provideFallbackSuggestions = (input) => {
+    console.log('Using fallback suggestions for:', input);
+    
+    const commonStreets = ['Main', 'Oak', 'Park', 'First', 'Second', 'Third', 'Elm', 'Maple', 'Washington', 'Lincoln'];
+    const streetTypes = ['Street', 'Avenue', 'Road', 'Drive', 'Lane', 'Circle', 'Court', 'Way'];
+    const cities = [
+      { name: 'Atlanta', zip: '30309' },
+      { name: 'Decatur', zip: '30030' },
+      { name: 'Sandy Springs', zip: '30328' },
+      { name: 'Marietta', zip: '30060' },
+      { name: 'Roswell', zip: '30075' },
+      { name: 'Brookhaven', zip: '30319' },
+      { name: 'Dunwoody', zip: '30338' }
+    ];
+
+    let suggestions = [];
+
+    // If input looks like a number, suggest house numbers
+    if (/^\d+/.test(input)) {
+      const number = input.match(/^\d+/)[0];
+      suggestions = cities.slice(0, 5).map((city, index) => 
+        `${number} ${commonStreets[index]} ${streetTypes[index % streetTypes.length]}, ${city.name}, GA ${city.zip}`
+      );
+    }
+    // If input looks like a street name
+    else if (input.length > 2) {
+      const matchingStreets = commonStreets.filter(street => 
+        street.toLowerCase().startsWith(input.toLowerCase())
+      );
+      
+      if (matchingStreets.length > 0) {
+        suggestions = matchingStreets.slice(0, 3).flatMap(street => 
+          cities.slice(0, 2).map(city => 
+            `${Math.floor(Math.random() * 9000) + 1000} ${street} Street, ${city.name}, GA ${city.zip}`
+          )
+        ).slice(0, 5);
+      } else {
+        // Fallback suggestions
+        suggestions = [
+          `${input} Street, Atlanta, GA 30309`,
+          `${input} Avenue, Decatur, GA 30030`,
+          `${input} Road, Sandy Springs, GA 30328`,
+          `${input} Drive, Marietta, GA 30060`,
+          `${input} Lane, Roswell, GA 30075`
+        ];
+      }
+    }
+
+    if (suggestions.length > 0) {
+      setAddressSuggestions(suggestions);
+      setShowSuggestions(true);
+    } else {
       setShowSuggestions(false);
     }
   };
