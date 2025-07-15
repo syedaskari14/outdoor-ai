@@ -2289,6 +2289,30 @@ export default function BackyardAI() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
+  // Add favicon to prevent 404 error
+  React.useEffect(() => {
+    // Create favicon link
+    const favicon = document.createElement('link');
+    favicon.rel = 'icon';
+    favicon.href = "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏊</text></svg>";
+    
+    // Remove any existing favicon
+    const existingFavicon = document.querySelector("link[rel='icon']");
+    if (existingFavicon) {
+      document.head.removeChild(existingFavicon);
+    }
+    
+    // Add new favicon
+    document.head.appendChild(favicon);
+    
+    // Cleanup function
+    return () => {
+      if (document.head.contains(favicon)) {
+        document.head.removeChild(favicon);
+      }
+    };
+  }, []);
+
   const contractorAI = new ContractorAI();
 
   const handlePhotosUpload = useCallback((acceptedFiles) => {
@@ -2463,9 +2487,6 @@ export default function BackyardAI() {
         borderBottom: '1px solid #475569',
         boxShadow: '0 10px 30px rgba(0,0,0,0.3)'
       }}>
-        {/* Add favicon meta tag */}
-        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏊</text></svg>" />
-        
         <div style={{
           maxWidth: '1400px',
           margin: '0 auto',
