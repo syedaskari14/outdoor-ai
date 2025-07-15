@@ -410,7 +410,7 @@ function LandscapeElement({ type, position, onSelect, selected, onDrag }) {
 }
 
 // Enhanced Photo Upload with Smart Address Auto-Complete
-function PhotoUpload({ onUpload, photos, onAddressChange, address }) {
+function PhotoUpload({ onUpload, photos, onAddressChange, address, isMobile }) {
   const [addressSuggestions, setAddressSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   
@@ -476,27 +476,27 @@ function PhotoUpload({ onUpload, photos, onAddressChange, address }) {
   };
 
   return (
-    <div style={{ maxWidth: window.innerWidth > 768 ? '1000px' : '100%', margin: '0 auto', padding: window.innerWidth > 768 ? '0' : '0 10px' }}>
+    <div style={{ maxWidth: isMobile ? '100%' : '1000px', margin: '0 auto', padding: isMobile ? '0 10px' : '0' }}>
       {/* Address Input Section */}
       <div style={{
         background: 'linear-gradient(145deg, #1e293b 0%, #334155 100%)',
-        borderRadius: window.innerWidth > 768 ? '24px' : '16px',
-        padding: window.innerWidth > 768 ? '30px' : '20px',
+        borderRadius: isMobile ? '16px' : '24px',
+        padding: isMobile ? '20px' : '30px',
         border: '1px solid #475569',
         boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
         marginBottom: '20px'
       }}>
-        <h3 style={{ fontSize: window.innerWidth > 768 ? '1.6rem' : '1.3rem', fontWeight: '700', color: '#f1f5f9', marginBottom: '16px', textAlign: 'center' }}>
+        <h3 style={{ fontSize: isMobile ? '1.3rem' : '1.6rem', fontWeight: '700', color: '#f1f5f9', marginBottom: '16px', textAlign: 'center' }}>
           🏠 Property Address
         </h3>
-        <p style={{ color: '#94a3b8', textAlign: 'center', marginBottom: '20px', fontSize: window.innerWidth > 768 ? '14px' : '13px' }}>
+        <p style={{ color: '#94a3b8', textAlign: 'center', marginBottom: '20px', fontSize: isMobile ? '13px' : '14px' }}>
           Address provides local building codes, permit costs, and property dimensions
         </p>
         
         <div style={{ position: 'relative' }}>
           <input
             type="text"
-            placeholder={window.innerWidth > 768 ? "Enter property address (e.g., 123 Main St, Atlanta, GA 30309)" : "Enter property address"}
+            placeholder={isMobile ? "Enter property address" : "Enter property address (e.g., 123 Main St, Atlanta, GA 30309)"}
             value={address}
             onChange={(e) => handleAddressInput(e.target.value)}
             onFocus={(e) => {
@@ -509,12 +509,12 @@ function PhotoUpload({ onUpload, photos, onAddressChange, address }) {
             }}
             style={{
               width: '100%',
-              padding: window.innerWidth > 768 ? '16px 50px 16px 20px' : '14px 45px 14px 16px',
+              padding: isMobile ? '14px 45px 14px 16px' : '16px 50px 16px 20px',
               borderRadius: '12px',
               border: '2px solid #475569',
               background: 'linear-gradient(135deg, #334155 0%, #475569 100%)',
               color: '#f1f5f9',
-              fontSize: window.innerWidth > 768 ? '16px' : '14px',
+              fontSize: isMobile ? '14px' : '16px',
               fontWeight: '500',
               outline: 'none',
               transition: 'all 0.3s ease',
@@ -523,11 +523,11 @@ function PhotoUpload({ onUpload, photos, onAddressChange, address }) {
           />
           <div style={{
             position: 'absolute',
-            right: window.innerWidth > 768 ? '16px' : '12px',
+            right: isMobile ? '12px' : '16px',
             top: '50%',
             transform: 'translateY(-50%)',
             color: '#94a3b8',
-            fontSize: window.innerWidth > 768 ? '20px' : '18px'
+            fontSize: isMobile ? '18px' : '20px'
           }}>
             📍
           </div>
@@ -587,8 +587,8 @@ function PhotoUpload({ onUpload, photos, onAddressChange, address }) {
       {/* Photo Upload Section */}
       <div style={{
         background: 'linear-gradient(145deg, #1e293b 0%, #334155 100%)',
-        borderRadius: window.innerWidth > 768 ? '24px' : '16px',
-        padding: window.innerWidth > 768 ? '40px' : '25px',
+        borderRadius: isMobile ? '16px' : '24px',
+        padding: isMobile ? '25px' : '40px',
         border: '1px solid #475569',
         boxShadow: '0 20px 60px rgba(0,0,0,0.3)'
       }}>
@@ -596,8 +596,8 @@ function PhotoUpload({ onUpload, photos, onAddressChange, address }) {
           {...getRootProps()} 
           style={{
             border: isDragActive ? '3px dashed #10b981' : '3px dashed #3b82f6',
-            borderRadius: window.innerWidth > 768 ? '20px' : '12px',
-            padding: window.innerWidth > 768 ? '50px' : '30px 20px',
+            borderRadius: isMobile ? '12px' : '20px',
+            padding: isMobile ? '30px 20px' : '50px',
             textAlign: 'center',
             background: isDragActive ? 'rgba(16, 185, 129, 0.1)' : 'rgba(59, 130, 246, 0.05)',
             cursor: 'pointer',
@@ -605,16 +605,16 @@ function PhotoUpload({ onUpload, photos, onAddressChange, address }) {
           }}
         >
           <input {...getInputProps()} />
-          <div style={{ fontSize: window.innerWidth > 768 ? '4rem' : '3rem', marginBottom: '20px' }}>
+          <div style={{ fontSize: isMobile ? '3rem' : '4rem', marginBottom: '20px' }}>
             {isDragActive ? '📥' : '📸'}
           </div>
-          <h3 style={{ fontSize: window.innerWidth > 768 ? '1.8rem' : '1.4rem', fontWeight: '700', color: '#f1f5f9', marginBottom: '16px' }}>
+          <h3 style={{ fontSize: isMobile ? '1.4rem' : '1.8rem', fontWeight: '700', color: '#f1f5f9', marginBottom: '16px' }}>
             {isDragActive ? 'Drop Photos Here!' : 'Upload Site Photos'}
           </h3>
-          <p style={{ color: '#94a3b8', marginBottom: '30px', fontSize: window.innerWidth > 768 ? '16px' : '14px' }}>
+          <p style={{ color: '#94a3b8', marginBottom: '30px', fontSize: isMobile ? '14px' : '16px' }}>
             {isDragActive ? 'Release to upload' : 'Drop photos here or click to browse'}
           </p>
-          <div style={{ fontSize: window.innerWidth > 768 ? '16px' : '14px', color: '#cbd5e1' }}>
+          <div style={{ fontSize: isMobile ? '14px' : '16px', color: '#cbd5e1' }}>
             <p>✓ Include doors/windows for scale reference</p>
             <p>✓ Capture all property boundaries</p>
             <p>✓ Show existing structures and utilities</p>
@@ -624,13 +624,13 @@ function PhotoUpload({ onUpload, photos, onAddressChange, address }) {
         
         {photos.length > 0 && (
           <div style={{ marginTop: '30px' }}>
-            <h4 style={{ fontSize: window.innerWidth > 768 ? '1.4rem' : '1.2rem', fontWeight: '700', color: '#f1f5f9', marginBottom: '20px' }}>
+            <h4 style={{ fontSize: isMobile ? '1.2rem' : '1.4rem', fontWeight: '700', color: '#f1f5f9', marginBottom: '20px' }}>
               Uploaded Photos ({photos.length})
             </h4>
             <div style={{ 
               display: 'grid', 
-              gridTemplateColumns: window.innerWidth > 768 ? 'repeat(auto-fill, minmax(180px, 1fr))' : 'repeat(auto-fill, minmax(140px, 1fr))',
-              gap: window.innerWidth > 768 ? '20px' : '15px'
+              gridTemplateColumns: isMobile ? 'repeat(auto-fill, minmax(140px, 1fr))' : 'repeat(auto-fill, minmax(180px, 1fr))',
+              gap: isMobile ? '15px' : '20px'
             }}>
               {photos.map((photo, index) => (
                 <div key={index} style={{ position: 'relative' }}>
@@ -639,7 +639,7 @@ function PhotoUpload({ onUpload, photos, onAddressChange, address }) {
                     alt={`Site Photo ${index + 1}`}
                     style={{ 
                       width: '100%', 
-                      height: window.innerWidth > 768 ? '120px' : '100px', 
+                      height: isMobile ? '100px' : '120px', 
                       objectFit: 'cover', 
                       borderRadius: '12px',
                       border: '2px solid #475569'
@@ -1140,6 +1140,7 @@ export default function BackyardAI() {
   const [aiResults, setAiResults] = useState(null);
   const [hardscapeElements, setHardscapeElements] = useState([]);
   const [landscapeElements, setLandscapeElements] = useState([]);
+  const [isMobile, setIsMobile] = useState(false);
   const [designData, setDesignData] = useState({
     pool: {
       position: [0, 0, 0],
@@ -1152,6 +1153,18 @@ export default function BackyardAI() {
       dimensions: { length: 50, width: 35 }
     }
   });
+
+  // Check for mobile on client side only
+  React.useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const contractorAI = new ContractorAI();
 
@@ -1304,7 +1317,7 @@ export default function BackyardAI() {
         }}>
           <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '15px' }}>
             <h1 style={{ 
-              fontSize: window.innerWidth > 768 ? '2.5rem' : '1.8rem', 
+              fontSize: isMobile ? '1.8rem' : '2.5rem', 
               fontWeight: '800', 
               background: 'linear-gradient(135deg, #3b82f6 0%, #6366f1 100%)',
               WebkitBackgroundClip: 'text',
@@ -1339,12 +1352,12 @@ export default function BackyardAI() {
       </nav>
 
       {/* Main content */}
-      <main style={{ maxWidth: '1400px', margin: '0 auto', padding: window.innerWidth > 768 ? '40px 30px' : '20px 15px' }}>
+      <main style={{ maxWidth: '1400px', margin: '0 auto', padding: isMobile ? '20px 15px' : '40px 30px' }}>
         {step === 'upload' && (
           <div>
-            <div style={{ textAlign: 'center', marginBottom: window.innerWidth > 768 ? '60px' : '30px' }}>
+            <div style={{ textAlign: 'center', marginBottom: isMobile ? '30px' : '60px' }}>
               <h2 style={{ 
-                fontSize: window.innerWidth > 768 ? '3.5rem' : '2.2rem', 
+                fontSize: isMobile ? '2.2rem' : '3.5rem', 
                 fontWeight: '800', 
                 color: '#f1f5f9',
                 marginBottom: '20px',
@@ -1354,10 +1367,10 @@ export default function BackyardAI() {
                 Professional Pool & Landscape Design
               </h2>
               <p style={{ 
-                fontSize: window.innerWidth > 768 ? '1.4rem' : '1.1rem', 
+                fontSize: isMobile ? '1.1rem' : '1.4rem', 
                 color: '#94a3b8',
                 marginBottom: '40px',
-                maxWidth: window.innerWidth > 768 ? '800px' : '100%',
+                maxWidth: isMobile ? '100%' : '800px',
                 margin: '0 auto 40px auto',
                 padding: '0 10px'
               }}>
@@ -1370,6 +1383,7 @@ export default function BackyardAI() {
               photos={photos}
               onAddressChange={handleAddressChange}
               address={address}
+              isMobile={isMobile}
             />
               
             {photos.length > 0 && address.trim() && (
@@ -1474,7 +1488,7 @@ export default function BackyardAI() {
         {step === 'design' && (
           <div style={{ 
             display: 'grid', 
-            gridTemplateColumns: window.innerWidth > 1200 ? '2fr 400px' : window.innerWidth > 768 ? '1.5fr 350px' : '1fr',
+            gridTemplateColumns: isMobile ? '1fr' : '2fr 400px',
             gap: '30px'
           }}>
             {/* 3D Viewer - Now Much Larger */}
@@ -1487,7 +1501,7 @@ export default function BackyardAI() {
                 boxShadow: '0 20px 60px rgba(0,0,0,0.3)'
               }}>
                 <div style={{ 
-                  height: window.innerWidth > 1200 ? '800px' : window.innerWidth > 768 ? '600px' : '400px' 
+                  height: isMobile ? '400px' : '800px'
                 }}>
                   <Canvas camera={{ position: [30, 20, 30], fov: 50 }}>
                     <Suspense fallback={null}>
@@ -1504,7 +1518,7 @@ export default function BackyardAI() {
                   </Canvas>
                 </div>
                 <div style={{
-                  padding: window.innerWidth > 768 ? '20px 30px' : '15px 20px',
+                  padding: isMobile ? '15px 20px' : '20px 30px',
                   background: 'linear-gradient(135deg, #334155 0%, #475569 100%)',
                   borderTop: '1px solid #64748b'
                 }}>
@@ -1512,10 +1526,10 @@ export default function BackyardAI() {
                     display: 'flex',
                     justifyContent: 'space-between',
                     alignItems: 'center',
-                    flexDirection: window.innerWidth > 768 ? 'row' : 'column',
-                    gap: window.innerWidth > 768 ? '0' : '10px'
+                    flexDirection: isMobile ? 'column' : 'row',
+                    gap: isMobile ? '10px' : '0'
                   }}>
-                    <div style={{ fontSize: '14px', color: '#cbd5e1', textAlign: window.innerWidth > 768 ? 'left' : 'center' }}>
+                    <div style={{ fontSize: '14px', color: '#cbd5e1', textAlign: isMobile ? 'center' : 'left' }}>
                       🎮 Professional 3D Controls • Drag • Zoom • Pan
                     </div>
                     <div style={{ fontSize: '14px', fontWeight: '600', color: '#f1f5f9' }}>
