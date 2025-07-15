@@ -934,52 +934,39 @@ function LandscapeElement({ type, position, onSelect, selected, onDrag, seasonal
   );
 }
 
-// Enhanced Photo Upload with Smart Address Auto-Complete - BULLETPROOF FIX
+// Enhanced Photo Upload with Smart Address Auto-Complete - SUPER SIMPLE FIX
 function PhotoUpload({ onUpload, photos, onAddressChange, address, isMobile }) {
   const [addressSuggestions, setAddressSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const fileInputRef = React.useRef(null);
   const [isDragOver, setIsDragOver] = useState(false);
   
-  // Force file input click
-  const triggerFileInput = React.useCallback((e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    console.log('Triggering file input click');
-    
-    if (fileInputRef.current) {
-      fileInputRef.current.value = ''; // Reset input
-      fileInputRef.current.click();
-    } else {
-      console.error('File input ref not found');
-    }
-  }, []);
-
-  // Handle file selection
-  const handleFileChange = React.useCallback((event) => {
-    console.log('File input change triggered');
+  // Handle file selection - SIMPLE
+  const handleFileChange = (event) => {
+    console.log('File change event:', event);
     const files = Array.from(event.target.files || []);
     console.log('Files selected:', files.length);
     
     if (files.length > 0) {
       onUpload(files);
+      // Reset input so same file can be selected again
+      event.target.value = '';
     }
-  }, [onUpload]);
+  };
 
   // Handle drag events
-  const handleDragOver = React.useCallback((e) => {
+  const handleDragOver = (e) => {
     e.preventDefault();
     e.stopPropagation();
     setIsDragOver(true);
-  }, []);
+  };
 
-  const handleDragLeave = React.useCallback((e) => {
+  const handleDragLeave = (e) => {
     e.preventDefault();
     e.stopPropagation();
     setIsDragOver(false);
-  }, []);
+  };
 
-  const handleDrop = React.useCallback((e) => {
+  const handleDrop = (e) => {
     e.preventDefault();
     e.stopPropagation();
     setIsDragOver(false);
@@ -990,7 +977,7 @@ function PhotoUpload({ onUpload, photos, onAddressChange, address, isMobile }) {
     if (files.length > 0) {
       onUpload(files);
     }
-  }, [onUpload]);
+  };
 
   // Real address suggestions using Google Places API
   const handleAddressInput = (value) => {
@@ -1214,7 +1201,7 @@ function PhotoUpload({ onUpload, photos, onAddressChange, address, isMobile }) {
         )}
       </div>
 
-      {/* Photo Upload Section - COMPLETELY FIXED */}
+      {/* Photo Upload Section - ULTRA SIMPLE */}
       <div style={{
         background: 'linear-gradient(145deg, #1e293b 0%, #334155 100%)',
         borderRadius: isMobile ? '16px' : '24px',
@@ -1222,41 +1209,26 @@ function PhotoUpload({ onUpload, photos, onAddressChange, address, isMobile }) {
         border: '1px solid #475569',
         boxShadow: '0 20px 60px rgba(0,0,0,0.3)'
       }}>
-        {/* Hidden file input - ALWAYS WORKS */}
-        <input
-          ref={fileInputRef}
-          type="file"
-          multiple
-          accept="image/*"
-          onChange={handleFileChange}
-          style={{ 
-            position: 'absolute',
-            left: '-9999px',
-            opacity: 0,
-            pointerEvents: 'none'
-          }}
-        />
+        <h3 style={{ fontSize: isMobile ? '1.4rem' : '1.8rem', fontWeight: '700', color: '#f1f5f9', marginBottom: '24px', textAlign: 'center' }}>
+          📸 Upload Site Photos
+        </h3>
         
-        {/* Main Upload Button - PRIMARY METHOD */}
+        {/* DIRECT FILE INPUT - NO HIDING */}
         <div style={{ textAlign: 'center', marginBottom: '30px' }}>
-          <button
-            type="button"
-            onClick={triggerFileInput}
+          <label 
+            htmlFor="photo-upload"
             style={{
+              display: 'inline-block',
               background: 'linear-gradient(135deg, #3b82f6 0%, #6366f1 100%)',
               color: 'white',
-              border: 'none',
-              borderRadius: '16px',
               padding: '20px 40px',
+              borderRadius: '16px',
               fontSize: '18px',
               fontWeight: '700',
               cursor: 'pointer',
               boxShadow: '0 8px 25px rgba(59, 130, 246, 0.4)',
               transition: 'all 0.3s ease',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '12px',
-              margin: '0 auto'
+              border: 'none'
             }}
             onMouseEnter={(e) => {
               e.target.style.transform = 'scale(1.05)';
@@ -1267,37 +1239,55 @@ function PhotoUpload({ onUpload, photos, onAddressChange, address, isMobile }) {
               e.target.style.boxShadow = '0 8px 25px rgba(59, 130, 246, 0.4)';
             }}
           >
-            <span style={{ fontSize: '24px' }}>📸</span>
-            Choose Photos to Upload
-          </button>
+            📁 Choose Photos to Upload
+          </label>
+          <input
+            id="photo-upload"
+            type="file"
+            multiple
+            accept="image/*"
+            onChange={handleFileChange}
+            style={{
+              position: 'absolute',
+              left: '-9999px',
+              opacity: 0
+            }}
+          />
         </div>
         
-        {/* Drag & Drop Area - SECONDARY METHOD */}
+        {/* Alternative: Drag & Drop Area */}
         <div 
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
-          onClick={triggerFileInput}
           style={{
             border: isDragOver ? '3px dashed #10b981' : '3px dashed #64748b',
             borderRadius: isMobile ? '12px' : '20px',
             padding: isMobile ? '30px 20px' : '40px',
             textAlign: 'center',
             background: isDragOver ? 'rgba(16, 185, 129, 0.1)' : 'rgba(100, 116, 139, 0.05)',
-            cursor: 'pointer',
-            transition: 'all 0.3s ease'
+            transition: 'all 0.3s ease',
+            marginBottom: '20px'
           }}
         >
           <div style={{ fontSize: isMobile ? '2.5rem' : '3rem', marginBottom: '16px' }}>
             {isDragOver ? '📥' : '📂'}
           </div>
-          <h3 style={{ fontSize: isMobile ? '1.2rem' : '1.4rem', fontWeight: '600', color: '#f1f5f9', marginBottom: '12px' }}>
-            {isDragOver ? 'Drop Photos Here!' : 'Or Drag & Drop Photos Here'}
-          </h3>
-          <p style={{ color: '#94a3b8', fontSize: isMobile ? '14px' : '16px', marginBottom: '20px' }}>
-            Click anywhere in this area or drag photos to upload
+          <p style={{ color: '#94a3b8', fontSize: isMobile ? '14px' : '16px', margin: 0 }}>
+            {isDragOver ? 'Drop Photos Here!' : 'Or drag and drop photos here'}
           </p>
-          
+        </div>
+        
+        {/* Instructions */}
+        <div style={{ 
+          background: 'rgba(59, 130, 246, 0.05)',
+          borderRadius: '12px',
+          padding: '20px',
+          marginBottom: '20px'
+        }}>
+          <h4 style={{ color: '#3b82f6', fontSize: '16px', fontWeight: '600', marginBottom: '12px', margin: '0 0 12px 0' }}>
+            📋 Photo Guidelines
+          </h4>
           <div style={{ fontSize: isMobile ? '12px' : '14px', color: '#cbd5e1' }}>
             <p style={{ margin: '4px 0' }}>✓ Include doors/windows for scale reference</p>
             <p style={{ margin: '4px 0' }}>✓ Capture all property boundaries</p>
@@ -1307,9 +1297,9 @@ function PhotoUpload({ onUpload, photos, onAddressChange, address, isMobile }) {
         </div>
         
         {photos.length > 0 && (
-          <div style={{ marginTop: '30px' }}>
-            <h4 style={{ fontSize: isMobile ? '1.2rem' : '1.4rem', fontWeight: '700', color: '#f1f5f9', marginBottom: '20px' }}>
-              ✅ Uploaded Photos ({photos.length})
+          <div>
+            <h4 style={{ fontSize: isMobile ? '1.2rem' : '1.4rem', fontWeight: '700', color: '#10b981', marginBottom: '20px' }}>
+              ✅ Successfully Uploaded ({photos.length} photos)
             </h4>
             <div style={{ 
               display: 'grid', 
@@ -1326,7 +1316,8 @@ function PhotoUpload({ onUpload, photos, onAddressChange, address, isMobile }) {
                       height: isMobile ? '100px' : '120px', 
                       objectFit: 'cover', 
                       borderRadius: '12px',
-                      border: '2px solid #10b981'
+                      border: '3px solid #10b981',
+                      boxShadow: '0 4px 15px rgba(16, 185, 129, 0.3)'
                     }}
                   />
                   <div style={{
@@ -1337,8 +1328,9 @@ function PhotoUpload({ onUpload, photos, onAddressChange, address, isMobile }) {
                     color: 'white',
                     fontSize: '12px',
                     fontWeight: '700',
-                    padding: '4px 8px',
-                    borderRadius: '8px'
+                    padding: '6px 10px',
+                    borderRadius: '8px',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.3)'
                   }}>
                     ✓ {index + 1}
                   </div>
