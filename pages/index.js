@@ -210,15 +210,15 @@ function Pool({ position = [0, 0, 0], size = [16, 8, 6], color = '#0066cc', onSe
 
   const currentFinish = finishes[finish] || finishes.plaster;
   
-  // Water color based on time of day
+  // Water color based on time of day - BLUE FOCUSED
   const waterColors = {
-    sunrise: '#FFB6C1',
-    morning: '#87CEEB',
-    noon: '#4169E1',
-    afternoon: '#4682B4',
-    sunset: '#FF6347',
-    evening: '#191970',
-    night: '#000080'
+    sunrise: '#87CEEB',
+    morning: '#4169E1',
+    noon: '#1e40af',
+    afternoon: '#2563eb',
+    sunset: '#3b82f6',
+    evening: '#1e3a8a',
+    night: '#1e293b'
   };
   
   const currentWaterColor = waterColors[timeOfDay] || waterColors.sunset;
@@ -329,55 +329,186 @@ function Pool({ position = [0, 0, 0], size = [16, 8, 6], color = '#0066cc', onSe
   );
 }
 
-// User-Friendly Hardscape Elements with Easy Drag Controls
+// User-Friendly Hardscape Elements with Luxury Features
 function HardscapeElement({ type, position, onSelect, selected, onDrag }) {
   const [isDragging, setIsDragging] = useState(false);
   const [hovered, setHovered] = useState(false);
   const meshRef = React.useRef();
   
   const elements = {
-    deck: { 
-      geometry: <Box args={[8, 0.2, 6]} />,
-      material: <meshStandardMaterial 
-        color={selected || isDragging ? "#FF6B35" : hovered ? "#DEB887" : "#C4A484"} 
-        roughness={0.8}
-        emissive={isDragging ? "#FF6B35" : "#000000"}
-        emissiveIntensity={isDragging ? 0.2 : 0}
-      />
-    },
-    patio: {
-      geometry: <Box args={[12, 0.15, 8]} />,
-      material: <meshStandardMaterial 
-        color={selected || isDragging ? "#FF6B35" : hovered ? "#A9A9A9" : "#808080"} 
-        roughness={0.9}
-        emissive={isDragging ? "#FF6B35" : "#000000"}
-        emissiveIntensity={isDragging ? 0.2 : 0}
-      />
-    },
-    pathway: {
-      geometry: <Box args={[20, 0.1, 3]} />,
-      material: <meshStandardMaterial 
-        color={selected || isDragging ? "#FF6B35" : hovered ? "#DEB887" : "#C4A484"} 
-        roughness={0.9}
-        emissive={isDragging ? "#FF6B35" : "#000000"}
-        emissiveIntensity={isDragging ? 0.2 : 0}
-      />
-    },
-    retaining: {
-      geometry: <Box args={[15, 3, 1]} />,
-      material: <meshStandardMaterial 
-        color={selected || isDragging ? "#FF6B35" : hovered ? "#708090" : "#5F6A6B"} 
-        roughness={0.8}
-        emissive={isDragging ? "#FF6B35" : "#000000"}
-        emissiveIntensity={isDragging ? 0.2 : 0}
-      />
-    },
+    // 🔥 Fire Features
     firepit: {
       geometry: <Cylinder args={[2, 2, 0.5]} />,
       material: <meshStandardMaterial 
         color={selected || isDragging ? "#FF6B35" : hovered ? "#A0522D" : "#8B4513"} 
         roughness={0.6}
         emissive={isDragging ? "#FF6B35" : "#000000"}
+        emissiveIntensity={isDragging ? 0.2 : 0}
+      />
+    },
+    linearfirewall: {
+      geometry: <Box args={[12, 2, 1]} />,
+      material: <meshStandardMaterial 
+        color={selected || isDragging ? "#FF4500" : hovered ? "#696969" : "#2F4F4F"} 
+        roughness={0.8}
+        emissive={isDragging ? "#FF4500" : "#FF4500"}
+        emissiveIntensity={isDragging ? 0.3 : 0.1}
+      />
+    },
+    firebowl: {
+      geometry: <Sphere args={[1.2]} position={[0, 1, 0]} />,
+      material: <meshStandardMaterial 
+        color={selected || isDragging ? "#FF6347" : hovered ? "#8B4513" : "#654321"} 
+        roughness={0.7}
+        emissive={isDragging ? "#FF6347" : "#FF4500"}
+        emissiveIntensity={isDragging ? 0.3 : 0.15}
+      />
+    },
+    fireplace: {
+      geometry: <Box args={[8, 6, 3]} />,
+      material: <meshStandardMaterial 
+        color={selected || isDragging ? "#FF6347" : hovered ? "#8B4513" : "#654321"} 
+        roughness={0.9}
+        emissive={isDragging ? "#FF6347" : "#FF4500"}
+        emissiveIntensity={isDragging ? 0.2 : 0.08}
+      />
+    },
+    
+    // 💧 Water Features
+    spa: {
+      geometry: <Cylinder args={[3, 3, 1]} />,
+      material: <meshStandardMaterial 
+        color={selected || isDragging ? "#4A90E2" : hovered ? "#87CEEB" : "#4682B4"} 
+        roughness={0.1}
+        metalness={0.3}
+        emissive={isDragging ? "#4A90E2" : "#000000"}
+        emissiveIntensity={isDragging ? 0.2 : 0}
+      />
+    },
+    waterwall: {
+      geometry: <Box args={[8, 4, 0.5]} />,
+      material: <meshStandardMaterial 
+        color={selected || isDragging ? "#4A90E2" : hovered ? "#87CEEB" : "#708090"} 
+        roughness={0.1}
+        metalness={0.4}
+        emissive={isDragging ? "#4A90E2" : "#000000"}
+        emissiveIntensity={isDragging ? 0.2 : 0}
+      />
+    },
+    fountain: {
+      geometry: <Cylinder args={[2, 1.5, 3]} />,
+      material: <meshStandardMaterial 
+        color={selected || isDragging ? "#4A90E2" : hovered ? "#87CEEB" : "#708090"} 
+        roughness={0.2}
+        metalness={0.2}
+        emissive={isDragging ? "#4A90E2" : "#000000"}
+        emissiveIntensity={isDragging ? 0.2 : 0}
+      />
+    },
+    koipond: {
+      geometry: <Cylinder args={[4, 4, 0.8]} />,
+      material: <meshStandardMaterial 
+        color={selected || isDragging ? "#228B22" : hovered ? "#32CD32" : "#006400"} 
+        roughness={0.1}
+        metalness={0.1}
+        emissive={isDragging ? "#228B22" : "#000000"}
+        emissiveIntensity={isDragging ? 0.2 : 0}
+      />
+    },
+    
+    // 🧱 Outdoor Living Structures
+    pergola: {
+      geometry: <Box args={[12, 3, 8]} />,
+      material: <meshStandardMaterial 
+        color={selected || isDragging ? "#DEB887" : hovered ? "#D2B48C" : "#8B7D6B"} 
+        roughness={0.8}
+        emissive={isDragging ? "#DEB887" : "#000000"}
+        emissiveIntensity={isDragging ? 0.2 : 0}
+      />
+    },
+    outdoorkitchen: {
+      geometry: <Box args={[10, 3, 4]} />,
+      material: <meshStandardMaterial 
+        color={selected || isDragging ? "#708090" : hovered ? "#A9A9A9" : "#696969"} 
+        roughness={0.4}
+        metalness={0.3}
+        emissive={isDragging ? "#708090" : "#000000"}
+        emissiveIntensity={isDragging ? 0.2 : 0}
+      />
+    },
+    bar: {
+      geometry: <Box args={[8, 3.5, 2]} />,
+      material: <meshStandardMaterial 
+        color={selected || isDragging ? "#8B4513" : hovered ? "#A0522D" : "#654321"} 
+        roughness={0.6}
+        emissive={isDragging ? "#8B4513" : "#000000"}
+        emissiveIntensity={isDragging ? 0.2 : 0}
+      />
+    },
+    cabana: {
+      geometry: <Box args={[6, 3, 6]} />,
+      material: <meshStandardMaterial 
+        color={selected || isDragging ? "#F5DEB3" : hovered ? "#DEB887" : "#D2B48C"} 
+        roughness={0.7}
+        emissive={isDragging ? "#F5DEB3" : "#000000"}
+        emissiveIntensity={isDragging ? 0.2 : 0}
+      />
+    },
+    
+    // Traditional Elements (Enhanced)
+    deck: { 
+      geometry: <Box args={[12, 0.3, 8]} />,
+      material: <meshStandardMaterial 
+        color={selected || isDragging ? "#FF6B35" : hovered ? "#DEB887" : "#CD853F"} 
+        roughness={0.8}
+        emissive={isDragging ? "#FF6B35" : "#000000"}
+        emissiveIntensity={isDragging ? 0.2 : 0}
+      />
+    },
+    patio: {
+      geometry: <Box args={[14, 0.2, 10]} />,
+      material: <meshStandardMaterial 
+        color={selected || isDragging ? "#FF6B35" : hovered ? "#D2B48C" : "#C0C0C0"} 
+        roughness={0.6}
+        emissive={isDragging ? "#FF6B35" : "#000000"}
+        emissiveIntensity={isDragging ? 0.2 : 0}
+      />
+    },
+    retaining: {
+      geometry: <Box args={[20, 4, 1.5]} />,
+      material: <meshStandardMaterial 
+        color={selected || isDragging ? "#FF6B35" : hovered ? "#708090" : "#556B2F"} 
+        roughness={0.9}
+        emissive={isDragging ? "#FF6B35" : "#000000"}
+        emissiveIntensity={isDragging ? 0.2 : 0}
+      />
+    },
+    
+    // 🎮 Sports & Recreation
+    puttinggreen: {
+      geometry: <Box args={[15, 0.1, 8]} />,
+      material: <meshStandardMaterial 
+        color={selected || isDragging ? "#32CD32" : hovered ? "#228B22" : "#006400"} 
+        roughness={0.2}
+        emissive={isDragging ? "#32CD32" : "#000000"}
+        emissiveIntensity={isDragging ? 0.2 : 0}
+      />
+    },
+    boccecourt: {
+      geometry: <Box args={[25, 0.2, 4]} />,
+      material: <meshStandardMaterial 
+        color={selected || isDragging ? "#DEB887" : hovered ? "#F4A460" : "#D2B48C"} 
+        roughness={0.8}
+        emissive={isDragging ? "#DEB887" : "#000000"}
+        emissiveIntensity={isDragging ? 0.2 : 0}
+      />
+    },
+    sauna: {
+      geometry: <Box args={[4, 3, 4]} />,
+      material: <meshStandardMaterial 
+        color={selected || isDragging ? "#8B4513" : hovered ? "#A0522D" : "#654321"} 
+        roughness={0.8}
+        emissive={isDragging ? "#8B4513" : "#000000"}
         emissiveIntensity={isDragging ? 0.2 : 0}
       />
     }
@@ -477,16 +608,17 @@ function HardscapeElement({ type, position, onSelect, selected, onDrag }) {
   );
 }
 
-// User-Friendly Landscape Elements with Easy Drag Controls
+// User-Friendly Landscape Elements with Luxury Features
 function LandscapeElement({ type, position, onSelect, selected, onDrag, seasonalColors }) {
   const [isDragging, setIsDragging] = useState(false);
   const [hovered, setHovered] = useState(false);
   const meshRef = React.useRef();
   
   const elements = {
+    // 🌳 Premium Trees & Plants
     tree: (
       <group>
-        <Cylinder args={[0.3, 0.3, 4]} position={[0, 2, 0]}>
+        <Cylinder args={[0.4, 0.4, 5]} position={[0, 2.5, 0]}>
           <meshStandardMaterial 
             color="#8B4513" 
             roughness={0.9}
@@ -494,7 +626,7 @@ function LandscapeElement({ type, position, onSelect, selected, onDrag, seasonal
             emissiveIntensity={isDragging ? 0.1 : 0}
           />
         </Cylinder>
-        <Sphere args={[2.5]} position={[0, 5, 0]}>
+        <Sphere args={[3]} position={[0, 6, 0]}>
           <meshStandardMaterial 
             color={selected || isDragging ? "#32CD32" : hovered ? "#90EE90" : seasonalColors?.trees || "#228B22"} 
             roughness={0.8}
@@ -504,8 +636,50 @@ function LandscapeElement({ type, position, onSelect, selected, onDrag, seasonal
         </Sphere>
       </group>
     ),
+    palmtree: (
+      <group>
+        <Cylinder args={[0.3, 0.3, 8]} position={[0, 4, 0]}>
+          <meshStandardMaterial 
+            color="#8B4513" 
+            roughness={0.9}
+            emissive={isDragging ? "#FF6B35" : "#000000"}
+            emissiveIntensity={isDragging ? 0.1 : 0}
+          />
+        </Cylinder>
+        <Sphere args={[2]} position={[0, 8.5, 0]}>
+          <meshStandardMaterial 
+            color={selected || isDragging ? "#228B22" : hovered ? "#32CD32" : "#006400"} 
+            roughness={0.7}
+            emissive={isDragging ? "#228B22" : "#000000"}
+            emissiveIntensity={isDragging ? 0.2 : 0}
+          />
+        </Sphere>
+      </group>
+    ),
+    japanesemaple: (
+      <group>
+        <Cylinder args={[0.2, 0.2, 3]} position={[0, 1.5, 0]}>
+          <meshStandardMaterial 
+            color="#654321" 
+            roughness={0.9}
+            emissive={isDragging ? "#FF6B35" : "#000000"}
+            emissiveIntensity={isDragging ? 0.1 : 0}
+          />
+        </Cylinder>
+        <Sphere args={[2]} position={[0, 3.5, 0]}>
+          <meshStandardMaterial 
+            color={selected || isDragging ? "#DC143C" : hovered ? "#FF6347" : "#8B0000"} 
+            roughness={0.8}
+            emissive={isDragging ? "#DC143C" : "#000000"}
+            emissiveIntensity={isDragging ? 0.2 : 0}
+          />
+        </Sphere>
+      </group>
+    ),
+    
+    // 🌿 Decorative Plants
     shrub: (
-      <Sphere args={[1]} position={[0, 1, 0]}>
+      <Sphere args={[1.2]} position={[0, 1.2, 0]}>
         <meshStandardMaterial 
           color={selected || isDragging ? "#90EE90" : hovered ? "#ADFF2F" : seasonalColors?.trees || "#6B8E23"} 
           roughness={0.9}
@@ -514,17 +688,27 @@ function LandscapeElement({ type, position, onSelect, selected, onDrag, seasonal
         />
       </Sphere>
     ),
-    flower: (
+    boxwood: (
+      <Box args={[2, 1.5, 2]} position={[0, 0.75, 0]}>
+        <meshStandardMaterial 
+          color={selected || isDragging ? "#228B22" : hovered ? "#32CD32" : "#006400"} 
+          roughness={0.8}
+          emissive={isDragging ? "#228B22" : "#000000"}
+          emissiveIntensity={isDragging ? 0.2 : 0}
+        />
+      </Box>
+    ),
+    lavender: (
       <group>
-        <Cylinder args={[0.8, 0.8, 0.3]} position={[0, 0.15, 0]}>
+        <Cylinder args={[0.8, 0.8, 0.4]} position={[0, 0.2, 0]}>
           <meshStandardMaterial 
-            color={selected || isDragging ? "#FFB6C1" : hovered ? "#FF1493" : seasonalColors?.flowers || "#FF69B4"} 
+            color={selected || isDragging ? "#9370DB" : hovered ? "#8A2BE2" : "#663399"} 
             roughness={0.3}
-            emissive={seasonalColors?.flowers || "#FF69B4"}
+            emissive={seasonalColors?.flowers || "#9370DB"}
             emissiveIntensity={isDragging ? 0.3 : 0.1}
           />
         </Cylinder>
-        <Cylinder args={[1.2, 1.2, 0.2]} position={[0, 0.4, 0]}>
+        <Cylinder args={[1.2, 1.2, 0.2]} position={[0, 0.5, 0]}>
           <meshStandardMaterial 
             color={seasonalColors?.grass || "#32CD32"} 
             roughness={0.8}
@@ -534,8 +718,55 @@ function LandscapeElement({ type, position, onSelect, selected, onDrag, seasonal
         </Cylinder>
       </group>
     ),
+    
+    // 🌸 Flower Gardens
+    flowerbed: (
+      <group>
+        <Box args={[6, 0.3, 3]} position={[0, 0.15, 0]}>
+          <meshStandardMaterial 
+            color={selected || isDragging ? "#8B4513" : hovered ? "#A0522D" : "#654321"} 
+            roughness={0.9}
+            emissive={isDragging ? "#8B4513" : "#000000"}
+            emissiveIntensity={isDragging ? 0.1 : 0}
+          />
+        </Box>
+        <Cylinder args={[1, 1, 0.3]} position={[-2, 0.45, 0]}>
+          <meshStandardMaterial 
+            color={seasonalColors?.flowers || "#FF69B4"} 
+            roughness={0.3}
+            emissive={seasonalColors?.flowers || "#FF69B4"}
+            emissiveIntensity={0.2}
+          />
+        </Cylinder>
+        <Cylinder args={[0.8, 0.8, 0.3]} position={[2, 0.45, 0]}>
+          <meshStandardMaterial 
+            color="#FFD700" 
+            roughness={0.3}
+            emissive="#FFD700"
+            emissiveIntensity={0.2}
+          />
+        </Cylinder>
+      </group>
+    ),
+    roses: (
+      <group>
+        <Cylinder args={[0.1, 0.1, 1]} position={[0, 0.5, 0]}>
+          <meshStandardMaterial color="#228B22" roughness={0.8} />
+        </Cylinder>
+        <Sphere args={[0.3]} position={[0, 1.2, 0]}>
+          <meshStandardMaterial 
+            color={selected || isDragging ? "#FF1493" : hovered ? "#FF69B4" : "#DC143C"} 
+            roughness={0.3}
+            emissive="#DC143C"
+            emissiveIntensity={0.2}
+          />
+        </Sphere>
+      </group>
+    ),
+    
+    // 🌱 Ground Cover & Grass
     grass: (
-      <Box args={[4, 0.05, 4]} position={[0, 0.025, 0]}>
+      <Box args={[5, 0.05, 5]} position={[0, 0.025, 0]}>
         <meshStandardMaterial 
           color={selected || isDragging ? "#ADFF2F" : hovered ? "#7CFC00" : seasonalColors?.grass || "#228B22"} 
           roughness={0.95}
@@ -543,6 +774,73 @@ function LandscapeElement({ type, position, onSelect, selected, onDrag, seasonal
           emissiveIntensity={isDragging ? 0.2 : 0}
         />
       </Box>
+    ),
+    artificialgrassturf: (
+      <Box args={[8, 0.03, 8]} position={[0, 0.015, 0]}>
+        <meshStandardMaterial 
+          color={selected || isDragging ? "#32CD32" : hovered ? "#00FF00" : "#228B22"} 
+          roughness={0.3}
+          emissive={isDragging ? "#32CD32" : "#000000"}
+          emissiveIntensity={isDragging ? 0.2 : 0}
+        />
+      </Box>
+    ),
+    
+    // 🪨 Decorative Rocks & Boulders
+    boulder: (
+      <Sphere args={[2]} position={[0, 2, 0]}>
+        <meshStandardMaterial 
+          color={selected || isDragging ? "#A9A9A9" : hovered ? "#C0C0C0" : "#696969"} 
+          roughness={0.9}
+          emissive={isDragging ? "#A9A9A9" : "#000000"}
+          emissiveIntensity={isDragging ? 0.1 : 0}
+        />
+      </Sphere>
+    ),
+    riverrock: (
+      <group>
+        <Sphere args={[0.8]} position={[0, 0.8, 0]}>
+          <meshStandardMaterial color="#708090" roughness={0.8} />
+        </Sphere>
+        <Sphere args={[0.6]} position={[1.5, 0.6, 0.5]}>
+          <meshStandardMaterial color="#696969" roughness={0.8} />
+        </Sphere>
+        <Sphere args={[0.5]} position={[-1, 0.5, -0.5]}>
+          <meshStandardMaterial color="#778899" roughness={0.8} />
+        </Sphere>
+      </group>
+    ),
+    
+    // 🌿 Specialty Gardens
+    zengarden: (
+      <group>
+        <Box args={[8, 0.1, 6]} position={[0, 0.05, 0]}>
+          <meshStandardMaterial 
+            color={selected || isDragging ? "#F5DEB3" : hovered ? "#DEB887" : "#D2B48C"} 
+            roughness={0.9}
+          />
+        </Box>
+        <Sphere args={[1]} position={[2, 1, 1]}>
+          <meshStandardMaterial color="#708090" roughness={0.9} />
+        </Sphere>
+        <Sphere args={[0.8]} position={[-2, 0.8, -1]}>
+          <meshStandardMaterial color="#696969" roughness={0.9} />
+        </Sphere>
+      </group>
+    ),
+    succulent: (
+      <group>
+        <Sphere args={[0.5]} position={[0, 0.5, 0]}>
+          <meshStandardMaterial 
+            color={selected || isDragging ? "#32CD32" : hovered ? "#90EE90" : "#228B22"} 
+            roughness={0.4}
+            metalness={0.1}
+          />
+        </Sphere>
+        <Sphere args={[0.3]} position={[0.8, 0.3, 0]}>
+          <meshStandardMaterial color="#90EE90" roughness={0.4} />
+        </Sphere>
+      </group>
     )
   };
   
@@ -1446,33 +1744,160 @@ function ContractorControls({ designData, onUpdate, onExport, aiResults, onAddEl
       {activeTab === 'hardscape' && (
         <div style={{ color: 'white' }}>
           <h3 style={{ fontSize: '20px', fontWeight: '700', marginBottom: '24px', color: '#f1f5f9' }}>
-            🏗️ Hardscape Elements
+            🏗️ Luxury Hardscape Elements
           </h3>
           
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
-            {[
-              { type: 'deck', label: '🪵 Deck', cost: '$8,000' },
-              { type: 'patio', label: '🏛️ Patio', cost: '$6,500' },
-              { type: 'pathway', label: '🛤️ Pathway', cost: '$3,200' },
-              { type: 'retaining', label: '🧱 Retaining Wall', cost: '$12,000' },
-              { type: 'firepit', label: '🔥 Fire Pit', cost: '$4,500' }
-            ].map(({ type, label, cost }) => (
-              <button
-                key={type}
-                onClick={() => onAddElement('hardscape', type)}
-                style={{
-                  ...luxuryButtonStyle,
-                  padding: '16px',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  textAlign: 'center'
-                }}
-              >
-                <span style={{ fontSize: '16px', marginBottom: '4px' }}>{label}</span>
-                <span style={{ fontSize: '12px', opacity: 0.8 }}>{cost}</span>
-              </button>
-            ))}
+          <div style={{ marginBottom: '20px' }}>
+            <h4 style={{ fontSize: '16px', fontWeight: '600', marginBottom: '12px', color: '#f1f5f9' }}>
+              🔥 Fire Features
+            </h4>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px', marginBottom: '16px' }}>
+              {[
+                { type: 'firepit', label: '🔥 Fire Pit', cost: '$4,500' },
+                { type: 'linearfirewall', label: '🔥 Fire Wall', cost: '$12,000' },
+                { type: 'firebowl', label: '🔥 Fire Bowl', cost: '$3,200' },
+                { type: 'fireplace', label: '🔥 Fireplace', cost: '$15,000' }
+              ].map(({ type, label, cost }) => (
+                <button
+                  key={type}
+                  onClick={() => onAddElement('hardscape', type)}
+                  style={{
+                    ...luxuryButtonStyle,
+                    padding: '12px 8px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    textAlign: 'center',
+                    fontSize: '10px'
+                  }}
+                >
+                  <span style={{ fontSize: '12px', marginBottom: '2px' }}>{label}</span>
+                  <span style={{ fontSize: '9px', opacity: 0.8 }}>{cost}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div style={{ marginBottom: '20px' }}>
+            <h4 style={{ fontSize: '16px', fontWeight: '600', marginBottom: '12px', color: '#f1f5f9' }}>
+              💧 Water Features
+            </h4>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px', marginBottom: '16px' }}>
+              {[
+                { type: 'spa', label: '♨️ Spa/Hot Tub', cost: '$25,000' },
+                { type: 'waterwall', label: '💧 Water Wall', cost: '$8,500' },
+                { type: 'fountain', label: '⛲ Fountain', cost: '$6,000' },
+                { type: 'koipond', label: '🐟 Koi Pond', cost: '$12,000' }
+              ].map(({ type, label, cost }) => (
+                <button
+                  key={type}
+                  onClick={() => onAddElement('hardscape', type)}
+                  style={{
+                    ...luxuryButtonStyle,
+                    padding: '12px 8px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    textAlign: 'center',
+                    fontSize: '10px'
+                  }}
+                >
+                  <span style={{ fontSize: '12px', marginBottom: '2px' }}>{label}</span>
+                  <span style={{ fontSize: '9px', opacity: 0.8 }}>{cost}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div style={{ marginBottom: '20px' }}>
+            <h4 style={{ fontSize: '16px', fontWeight: '600', marginBottom: '12px', color: '#f1f5f9' }}>
+              🧱 Outdoor Living
+            </h4>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px', marginBottom: '16px' }}>
+              {[
+                { type: 'pergola', label: '🏛️ Pergola', cost: '$18,000' },
+                { type: 'outdoorkitchen', label: '👨‍🍳 Kitchen', cost: '$35,000' },
+                { type: 'bar', label: '🍻 Outdoor Bar', cost: '$22,000' },
+                { type: 'cabana', label: '🏖️ Cabana', cost: '$28,000' }
+              ].map(({ type, label, cost }) => (
+                <button
+                  key={type}
+                  onClick={() => onAddElement('hardscape', type)}
+                  style={{
+                    ...luxuryButtonStyle,
+                    padding: '12px 8px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    textAlign: 'center',
+                    fontSize: '10px'
+                  }}
+                >
+                  <span style={{ fontSize: '12px', marginBottom: '2px' }}>{label}</span>
+                  <span style={{ fontSize: '9px', opacity: 0.8 }}>{cost}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div style={{ marginBottom: '20px' }}>
+            <h4 style={{ fontSize: '16px', fontWeight: '600', marginBottom: '12px', color: '#f1f5f9' }}>
+              🎮 Recreation & Wellness
+            </h4>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px', marginBottom: '16px' }}>
+              {[
+                { type: 'puttinggreen', label: '⛳ Putting Green', cost: '$15,000' },
+                { type: 'boccecourt', label: '🎯 Bocce Court', cost: '$8,500' },
+                { type: 'sauna', label: '🧖‍♂️ Sauna', cost: '$45,000' },
+                { type: 'deck', label: '🪵 Premium Deck', cost: '$12,000' }
+              ].map(({ type, label, cost }) => (
+                <button
+                  key={type}
+                  onClick={() => onAddElement('hardscape', type)}
+                  style={{
+                    ...luxuryButtonStyle,
+                    padding: '12px 8px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    textAlign: 'center',
+                    fontSize: '10px'
+                  }}
+                >
+                  <span style={{ fontSize: '12px', marginBottom: '2px' }}>{label}</span>
+                  <span style={{ fontSize: '9px', opacity: 0.8 }}>{cost}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <h4 style={{ fontSize: '16px', fontWeight: '600', marginBottom: '12px', color: '#f1f5f9' }}>
+              🏗️ Traditional Elements
+            </h4>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px' }}>
+              {[
+                { type: 'patio', label: '🏛️ Patio', cost: '$8,500' },
+                { type: 'retaining', label: '🧱 Retaining Wall', cost: '$12,000' }
+              ].map(({ type, label, cost }) => (
+                <button
+                  key={type}
+                  onClick={() => onAddElement('hardscape', type)}
+                  style={{
+                    ...luxuryButtonStyle,
+                    padding: '12px 8px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    textAlign: 'center',
+                    fontSize: '10px'
+                  }}
+                >
+                  <span style={{ fontSize: '12px', marginBottom: '2px' }}>{label}</span>
+                  <span style={{ fontSize: '9px', opacity: 0.8 }}>{cost}</span>
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       )}
@@ -1481,32 +1906,156 @@ function ContractorControls({ designData, onUpdate, onExport, aiResults, onAddEl
       {activeTab === 'landscape' && (
         <div style={{ color: 'white' }}>
           <h3 style={{ fontSize: '20px', fontWeight: '700', marginBottom: '24px', color: '#f1f5f9' }}>
-            🌳 Landscape Elements
+            🌳 Luxury Landscape Elements
           </h3>
           
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
-            {[
-              { type: 'tree', label: '🌳 Trees', cost: '$800' },
-              { type: 'shrub', label: '🌿 Shrubs', cost: '$200' },
-              { type: 'flower', label: '🌸 Flowers', cost: '$150' },
-              { type: 'grass', label: '🌱 Grass Area', cost: '$400' }
-            ].map(({ type, label, cost }) => (
-              <button
-                key={type}
-                onClick={() => onAddElement('landscape', type)}
-                style={{
-                  ...luxuryButtonStyle,
-                  padding: '16px',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  textAlign: 'center'
-                }}
-              >
-                <span style={{ fontSize: '16px', marginBottom: '4px' }}>{label}</span>
-                <span style={{ fontSize: '12px', opacity: 0.8 }}>{cost}</span>
-              </button>
-            ))}
+          <div style={{ marginBottom: '20px' }}>
+            <h4 style={{ fontSize: '16px', fontWeight: '600', marginBottom: '12px', color: '#f1f5f9' }}>
+              🌳 Premium Trees
+            </h4>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px', marginBottom: '16px' }}>
+              {[
+                { type: 'tree', label: '🌳 Oak Tree', cost: '$1,200' },
+                { type: 'palmtree', label: '🌴 Palm Tree', cost: '$2,500' },
+                { type: 'japanesemaple', label: '🍁 Japanese Maple', cost: '$1,800' }
+              ].map(({ type, label, cost }) => (
+                <button
+                  key={type}
+                  onClick={() => onAddElement('landscape', type)}
+                  style={{
+                    ...luxuryButtonStyle,
+                    padding: '12px 8px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    textAlign: 'center',
+                    fontSize: '10px'
+                  }}
+                >
+                  <span style={{ fontSize: '12px', marginBottom: '2px' }}>{label}</span>
+                  <span style={{ fontSize: '9px', opacity: 0.8 }}>{cost}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div style={{ marginBottom: '20px' }}>
+            <h4 style={{ fontSize: '16px', fontWeight: '600', marginBottom: '12px', color: '#f1f5f9' }}>
+              🌿 Designer Plants
+            </h4>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px', marginBottom: '16px' }}>
+              {[
+                { type: 'shrub', label: '🌿 Premium Shrub', cost: '$300' },
+                { type: 'boxwood', label: '📦 Boxwood', cost: '$250' },
+                { type: 'lavender', label: '💜 Lavender', cost: '$180' },
+                { type: 'succulent', label: '🌵 Succulent Garden', cost: '$400' }
+              ].map(({ type, label, cost }) => (
+                <button
+                  key={type}
+                  onClick={() => onAddElement('landscape', type)}
+                  style={{
+                    ...luxuryButtonStyle,
+                    padding: '12px 8px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    textAlign: 'center',
+                    fontSize: '10px'
+                  }}
+                >
+                  <span style={{ fontSize: '12px', marginBottom: '2px' }}>{label}</span>
+                  <span style={{ fontSize: '9px', opacity: 0.8 }}>{cost}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div style={{ marginBottom: '20px' }}>
+            <h4 style={{ fontSize: '16px', fontWeight: '600', marginBottom: '12px', color: '#f1f5f9' }}>
+              🌸 Flower Gardens
+            </h4>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px', marginBottom: '16px' }}>
+              {[
+                { type: 'flowerbed', label: '🌺 Flower Bed', cost: '$850' },
+                { type: 'roses', label: '🌹 Rose Garden', cost: '$650' }
+              ].map(({ type, label, cost }) => (
+                <button
+                  key={type}
+                  onClick={() => onAddElement('landscape', type)}
+                  style={{
+                    ...luxuryButtonStyle,
+                    padding: '12px 8px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    textAlign: 'center',
+                    fontSize: '10px'
+                  }}
+                >
+                  <span style={{ fontSize: '12px', marginBottom: '2px' }}>{label}</span>
+                  <span style={{ fontSize: '9px', opacity: 0.8 }}>{cost}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div style={{ marginBottom: '20px' }}>
+            <h4 style={{ fontSize: '16px', fontWeight: '600', marginBottom: '12px', color: '#f1f5f9' }}>
+              🌱 Ground Cover & Turf
+            </h4>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px', marginBottom: '16px' }}>
+              {[
+                { type: 'grass', label: '🌱 Natural Grass', cost: '$500' },
+                { type: 'artificialgrassturf', label: '🌿 Artificial Turf', cost: '$1,200' }
+              ].map(({ type, label, cost }) => (
+                <button
+                  key={type}
+                  onClick={() => onAddElement('landscape', type)}
+                  style={{
+                    ...luxuryButtonStyle,
+                    padding: '12px 8px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    textAlign: 'center',
+                    fontSize: '10px'
+                  }}
+                >
+                  <span style={{ fontSize: '12px', marginBottom: '2px' }}>{label}</span>
+                  <span style={{ fontSize: '9px', opacity: 0.8 }}>{cost}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <h4 style={{ fontSize: '16px', fontWeight: '600', marginBottom: '12px', color: '#f1f5f9' }}>
+              🪨 Natural Elements
+            </h4>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px' }}>
+              {[
+                { type: 'boulder', label: '🪨 Natural Boulder', cost: '$1,500' },
+                { type: 'riverrock', label: '⚫ River Rock', cost: '$800' },
+                { type: 'zengarden', label: '🧘 Zen Garden', cost: '$3,200' }
+              ].map(({ type, label, cost }) => (
+                <button
+                  key={type}
+                  onClick={() => onAddElement('landscape', type)}
+                  style={{
+                    ...luxuryButtonStyle,
+                    padding: '12px 8px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    textAlign: 'center',
+                    fontSize: '10px'
+                  }}
+                >
+                  <span style={{ fontSize: '12px', marginBottom: '2px' }}>{label}</span>
+                  <span style={{ fontSize: '9px', opacity: 0.8 }}>{cost}</span>
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       )}
