@@ -942,21 +942,37 @@ function LandscapeElement({ type, position, onSelect, selected, onDrag, seasonal
   );
 }
 
-// SIMPLIFIED Photo Upload - Using Working Method 1 Approach
+// ULTRA SIMPLIFIED Photo Upload - Debug Version
 function PhotoUpload({ onUpload, photos, onAddressChange, address, isMobile }) {
   const [addressSuggestions, setAddressSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   
-  // SIMPLE file handler - Method 1 that works
+  // ULTRA SIMPLE file handler with extensive logging
   const handleFileChange = (event) => {
-    console.log('BackyardAI file change:', event.target.files);
+    console.log('🔥 UPLOAD EVENT TRIGGERED!');
+    console.log('🔥 Event:', event);
+    console.log('🔥 Event type:', event.type);
+    console.log('🔥 Target:', event.target);
+    console.log('🔥 Files:', event.target.files);
+    console.log('🔥 Files length:', event.target.files?.length);
+    
     const files = Array.from(event.target.files || []);
-    console.log('BackyardAI files array:', files.length);
+    console.log('🔥 Files array:', files);
+    console.log('🔥 Files array length:', files.length);
     
     if (files.length > 0) {
-      console.log('BackyardAI calling onUpload with:', files);
+      console.log('🔥 CALLING onUpload with files:', files);
       onUpload(files);
+      console.log('🔥 onUpload called successfully');
+    } else {
+      console.log('🔥 NO FILES SELECTED');
     }
+  };
+
+  // Test function to verify click events work
+  const handleTestClick = () => {
+    console.log('🔥 TEST BUTTON CLICKED - Click events work!');
+    alert('Click events are working! The issue is with file input.');
   };
 
   // Real address suggestions using Google Places API
@@ -1171,7 +1187,7 @@ function PhotoUpload({ onUpload, photos, onAddressChange, address, isMobile }) {
         )}
       </div>
 
-      {/* SIMPLIFIED Photo Upload - METHOD 1 APPROACH */}
+      {/* ULTRA SIMPLIFIED Photo Upload - MULTIPLE APPROACHES */}
       <div style={{
         background: 'linear-gradient(145deg, #1e293b 0%, #334155 100%)',
         borderRadius: isMobile ? '16px' : '24px',
@@ -1180,39 +1196,74 @@ function PhotoUpload({ onUpload, photos, onAddressChange, address, isMobile }) {
         boxShadow: '0 20px 60px rgba(0,0,0,0.3)'
       }}>
         <h3 style={{ fontSize: isMobile ? '1.4rem' : '1.8rem', fontWeight: '700', color: '#f1f5f9', marginBottom: '24px', textAlign: 'center' }}>
-          📸 Upload Site Photos
+          📸 Upload Site Photos - DEBUG MODE
         </h3>
         
-        {/* METHOD 1: Simple Label + Input (PROVEN TO WORK) */}
+        {/* TEST: Normal Button to Verify Click Events Work */}
         <div style={{ textAlign: 'center', marginBottom: '20px' }}>
-          <label 
-            htmlFor="backyardai-photo-upload"
+          <button 
+            onClick={handleTestClick}
             style={{
-              display: 'inline-block',
-              background: 'linear-gradient(135deg, #3b82f6 0%, #6366f1 100%)',
+              background: 'linear-gradient(135deg, #dc2626 0%, #ef4444 100%)',
               color: 'white',
-              padding: '20px 40px',
-              borderRadius: '16px',
-              fontSize: '18px',
+              padding: '15px 30px',
+              borderRadius: '12px',
+              fontSize: '16px',
               fontWeight: '700',
               cursor: 'pointer',
-              boxShadow: '0 8px 25px rgba(59, 130, 246, 0.4)',
-              transition: 'all 0.3s ease',
-              border: 'none'
-            }}
-            onMouseEnter={(e) => {
-              e.target.style.transform = 'scale(1.05)';
-              e.target.style.boxShadow = '0 12px 35px rgba(59, 130, 246, 0.5)';
-            }}
-            onMouseLeave={(e) => {
-              e.target.style.transform = 'scale(1)';
-              e.target.style.boxShadow = '0 8px 25px rgba(59, 130, 246, 0.4)';
+              border: 'none',
+              marginBottom: '10px'
             }}
           >
-            📁 Choose Photos to Upload
+            🧪 TEST: Click Me (Should Show Alert)
+          </button>
+          <p style={{ color: '#94a3b8', fontSize: '12px', margin: 0 }}>
+            ↑ This tests if click events work at all
+          </p>
+        </div>
+
+        {/* APPROACH 1: Direct File Input (Visible) */}
+        <div style={{ textAlign: 'center', marginBottom: '30px' }}>
+          <h4 style={{ color: '#f59e0b', marginBottom: '15px' }}>Approach 1: Direct File Input</h4>
+          <input
+            type="file"
+            multiple
+            accept="image/*"
+            onChange={handleFileChange}
+            style={{
+              background: '#334155',
+              color: '#f1f5f9',
+              padding: '12px',
+              borderRadius: '8px',
+              border: '2px solid #64748b',
+              fontSize: '14px',
+              width: '100%',
+              maxWidth: '400px'
+            }}
+          />
+        </div>
+
+        {/* APPROACH 2: Hidden Input + Label (Method 1) */}
+        <div style={{ textAlign: 'center', marginBottom: '30px' }}>
+          <h4 style={{ color: '#10b981', marginBottom: '15px' }}>Approach 2: Hidden Input + Label</h4>
+          <label 
+            htmlFor="debug-photo-upload-2"
+            style={{
+              display: 'inline-block',
+              background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+              color: 'white',
+              padding: '15px 30px',
+              borderRadius: '12px',
+              fontSize: '16px',
+              fontWeight: '700',
+              cursor: 'pointer',
+              boxShadow: '0 4px 15px rgba(16, 185, 129, 0.3)'
+            }}
+          >
+            📁 Method 1: Label + Hidden Input
           </label>
           <input
-            id="backyardai-photo-upload"
+            id="debug-photo-upload-2"
             type="file"
             multiple
             accept="image/*"
@@ -1224,24 +1275,49 @@ function PhotoUpload({ onUpload, photos, onAddressChange, address, isMobile }) {
             }}
           />
         </div>
-        
-        {/* Instructions */}
-        <div style={{ 
-          background: 'rgba(59, 130, 246, 0.05)',
-          borderRadius: '12px',
-          padding: '20px',
-          marginBottom: '20px',
-          textAlign: 'center'
-        }}>
-          <h4 style={{ color: '#3b82f6', fontSize: '16px', fontWeight: '600', marginBottom: '12px', margin: '0 0 12px 0' }}>
-            📋 Photo Guidelines
-          </h4>
-          <div style={{ fontSize: isMobile ? '12px' : '14px', color: '#cbd5e1' }}>
-            <p style={{ margin: '4px 0' }}>✓ Include doors/windows for scale reference</p>
-            <p style={{ margin: '4px 0' }}>✓ Capture all property boundaries</p>
-            <p style={{ margin: '4px 0' }}>✓ Show existing structures and utilities</p>
-            <p style={{ margin: '4px 0' }}>✓ Take photos from multiple angles</p>
-          </div>
+
+        {/* APPROACH 3: Button + Manual Trigger */}
+        <div style={{ textAlign: 'center', marginBottom: '30px' }}>
+          <h4 style={{ color: '#8b5cf6', marginBottom: '15px' }}>Approach 3: Button + Manual Trigger</h4>
+          <button
+            onClick={() => {
+              console.log('🔥 Manual trigger button clicked');
+              const input = document.getElementById('debug-photo-upload-3');
+              console.log('🔥 Found input element:', input);
+              if (input) {
+                console.log('🔥 Attempting to click input');
+                input.click();
+                console.log('🔥 Input.click() called');
+              } else {
+                console.log('🔥 ERROR: Input element not found!');
+              }
+            }}
+            style={{
+              background: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)',
+              color: 'white',
+              padding: '15px 30px',
+              border: 'none',
+              borderRadius: '12px',
+              fontSize: '16px',
+              fontWeight: '700',
+              cursor: 'pointer',
+              boxShadow: '0 4px 15px rgba(139, 92, 246, 0.3)'
+            }}
+          >
+            📁 Method 3: Button Trigger
+          </button>
+          <input
+            id="debug-photo-upload-3"
+            type="file"
+            multiple
+            accept="image/*"
+            onChange={handleFileChange}
+            style={{
+              position: 'absolute',
+              left: '-9999px',
+              opacity: 0
+            }}
+          />
         </div>
         
         {photos.length > 0 && (
