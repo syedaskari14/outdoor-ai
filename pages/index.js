@@ -942,37 +942,20 @@ function LandscapeElement({ type, position, onSelect, selected, onDrag, seasonal
   );
 }
 
-// ULTRA SIMPLIFIED Photo Upload - Debug Version
+// Clean Photo Upload Component - Production Ready
 function PhotoUpload({ onUpload, photos, onAddressChange, address, isMobile }) {
   const [addressSuggestions, setAddressSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   
-  // ULTRA SIMPLE file handler with extensive logging
+  // Simple file handler
   const handleFileChange = (event) => {
-    console.log('🔥 UPLOAD EVENT TRIGGERED!');
-    console.log('🔥 Event:', event);
-    console.log('🔥 Event type:', event.type);
-    console.log('🔥 Target:', event.target);
-    console.log('🔥 Files:', event.target.files);
-    console.log('🔥 Files length:', event.target.files?.length);
-    
     const files = Array.from(event.target.files || []);
-    console.log('🔥 Files array:', files);
-    console.log('🔥 Files array length:', files.length);
     
     if (files.length > 0) {
-      console.log('🔥 CALLING onUpload with files:', files);
       onUpload(files);
-      console.log('🔥 onUpload called successfully');
-    } else {
-      console.log('🔥 NO FILES SELECTED');
+      // Reset input so same files can be selected again
+      event.target.value = '';
     }
-  };
-
-  // Test function to verify click events work
-  const handleTestClick = () => {
-    console.log('🔥 TEST BUTTON CLICKED - Click events work!');
-    alert('Click events are working! The issue is with file input.');
   };
 
   // Real address suggestions using Google Places API
@@ -989,8 +972,6 @@ function PhotoUpload({ onUpload, photos, onAddressChange, address, isMobile }) {
 
   const fetchAddressSuggestions = async (input) => {
     try {
-      console.log('Fetching address suggestions for:', input);
-      
       const response = await fetch('/api/places-autocomplete', {
         method: 'POST',
         headers: {
@@ -1011,9 +992,7 @@ function PhotoUpload({ onUpload, photos, onAddressChange, address, isMobile }) {
         const suggestions = data.predictions.map(prediction => prediction.description);
         setAddressSuggestions(suggestions.slice(0, 5));
         setShowSuggestions(true);
-        console.log('Google Places suggestions:', suggestions);
       } else {
-        console.log('No Google Places suggestions found');
         provideFallbackSuggestions(input);
       }
     } catch (error) {
@@ -1023,8 +1002,6 @@ function PhotoUpload({ onUpload, photos, onAddressChange, address, isMobile }) {
   };
 
   const provideFallbackSuggestions = (input) => {
-    console.log('Using fallback suggestions for:', input);
-    
     const commonStreets = ['Main', 'Oak', 'Park', 'First', 'Second', 'Third', 'Elm', 'Maple', 'Washington', 'Lincoln'];
     const streetTypes = ['Street', 'Avenue', 'Road', 'Drive', 'Lane', 'Circle', 'Court', 'Way'];
     const cities = [
@@ -1187,7 +1164,7 @@ function PhotoUpload({ onUpload, photos, onAddressChange, address, isMobile }) {
         )}
       </div>
 
-      {/* ULTRA SIMPLIFIED Photo Upload - MULTIPLE APPROACHES */}
+      {/* Photo Upload Section */}
       <div style={{
         background: 'linear-gradient(145deg, #1e293b 0%, #334155 100%)',
         borderRadius: isMobile ? '16px' : '24px',
@@ -1196,74 +1173,55 @@ function PhotoUpload({ onUpload, photos, onAddressChange, address, isMobile }) {
         boxShadow: '0 20px 60px rgba(0,0,0,0.3)'
       }}>
         <h3 style={{ fontSize: isMobile ? '1.4rem' : '1.8rem', fontWeight: '700', color: '#f1f5f9', marginBottom: '24px', textAlign: 'center' }}>
-          📸 Upload Site Photos - DEBUG MODE
+          📸 Upload Site Photos
         </h3>
-        
-        {/* TEST: Normal Button to Verify Click Events Work */}
-        <div style={{ textAlign: 'center', marginBottom: '20px' }}>
-          <button 
-            onClick={handleTestClick}
-            style={{
-              background: 'linear-gradient(135deg, #dc2626 0%, #ef4444 100%)',
-              color: 'white',
-              padding: '15px 30px',
-              borderRadius: '12px',
-              fontSize: '16px',
-              fontWeight: '700',
-              cursor: 'pointer',
-              border: 'none',
-              marginBottom: '10px'
-            }}
-          >
-            🧪 TEST: Click Me (Should Show Alert)
-          </button>
-          <p style={{ color: '#94a3b8', fontSize: '12px', margin: 0 }}>
-            ↑ This tests if click events work at all
+
+        {/* Browser Compatibility Notice */}
+        <div style={{
+          background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+          borderRadius: '12px',
+          padding: '16px',
+          marginBottom: '24px',
+          color: 'white'
+        }}>
+          <h4 style={{ margin: '0 0 8px 0', fontSize: '14px', fontWeight: '700' }}>
+            🛡️ Browser Compatibility
+          </h4>
+          <p style={{ margin: 0, fontSize: '12px', lineHeight: '1.4' }}>
+            If upload doesn't work in <strong>Brave Browser</strong>: Click the Brave shield icon → Disable shields for this site, or try Chrome/Safari.
           </p>
         </div>
-
-        {/* APPROACH 1: Direct File Input (Visible) */}
+        
+        {/* Main Upload Button */}
         <div style={{ textAlign: 'center', marginBottom: '30px' }}>
-          <h4 style={{ color: '#f59e0b', marginBottom: '15px' }}>Approach 1: Direct File Input</h4>
-          <input
-            type="file"
-            multiple
-            accept="image/*"
-            onChange={handleFileChange}
-            style={{
-              background: '#334155',
-              color: '#f1f5f9',
-              padding: '12px',
-              borderRadius: '8px',
-              border: '2px solid #64748b',
-              fontSize: '14px',
-              width: '100%',
-              maxWidth: '400px'
-            }}
-          />
-        </div>
-
-        {/* APPROACH 2: Hidden Input + Label (Method 1) */}
-        <div style={{ textAlign: 'center', marginBottom: '30px' }}>
-          <h4 style={{ color: '#10b981', marginBottom: '15px' }}>Approach 2: Hidden Input + Label</h4>
           <label 
-            htmlFor="debug-photo-upload-2"
+            htmlFor="backyardai-photo-upload"
             style={{
               display: 'inline-block',
-              background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+              background: 'linear-gradient(135deg, #3b82f6 0%, #6366f1 100%)',
               color: 'white',
-              padding: '15px 30px',
-              borderRadius: '12px',
-              fontSize: '16px',
+              padding: '20px 40px',
+              borderRadius: '16px',
+              fontSize: '18px',
               fontWeight: '700',
               cursor: 'pointer',
-              boxShadow: '0 4px 15px rgba(16, 185, 129, 0.3)'
+              boxShadow: '0 8px 25px rgba(59, 130, 246, 0.4)',
+              transition: 'all 0.3s ease',
+              border: 'none'
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.transform = 'scale(1.05)';
+              e.target.style.boxShadow = '0 12px 35px rgba(59, 130, 246, 0.5)';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.transform = 'scale(1)';
+              e.target.style.boxShadow = '0 8px 25px rgba(59, 130, 246, 0.4)';
             }}
           >
-            📁 Method 1: Label + Hidden Input
+            📁 Choose Photos to Upload
           </label>
           <input
-            id="debug-photo-upload-2"
+            id="backyardai-photo-upload"
             type="file"
             multiple
             accept="image/*"
@@ -1275,49 +1233,23 @@ function PhotoUpload({ onUpload, photos, onAddressChange, address, isMobile }) {
             }}
           />
         </div>
-
-        {/* APPROACH 3: Button + Manual Trigger */}
-        <div style={{ textAlign: 'center', marginBottom: '30px' }}>
-          <h4 style={{ color: '#8b5cf6', marginBottom: '15px' }}>Approach 3: Button + Manual Trigger</h4>
-          <button
-            onClick={() => {
-              console.log('🔥 Manual trigger button clicked');
-              const input = document.getElementById('debug-photo-upload-3');
-              console.log('🔥 Found input element:', input);
-              if (input) {
-                console.log('🔥 Attempting to click input');
-                input.click();
-                console.log('🔥 Input.click() called');
-              } else {
-                console.log('🔥 ERROR: Input element not found!');
-              }
-            }}
-            style={{
-              background: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)',
-              color: 'white',
-              padding: '15px 30px',
-              border: 'none',
-              borderRadius: '12px',
-              fontSize: '16px',
-              fontWeight: '700',
-              cursor: 'pointer',
-              boxShadow: '0 4px 15px rgba(139, 92, 246, 0.3)'
-            }}
-          >
-            📁 Method 3: Button Trigger
-          </button>
-          <input
-            id="debug-photo-upload-3"
-            type="file"
-            multiple
-            accept="image/*"
-            onChange={handleFileChange}
-            style={{
-              position: 'absolute',
-              left: '-9999px',
-              opacity: 0
-            }}
-          />
+        
+        {/* Instructions */}
+        <div style={{ 
+          background: 'rgba(59, 130, 246, 0.05)',
+          borderRadius: '12px',
+          padding: '20px',
+          marginBottom: '20px'
+        }}>
+          <h4 style={{ color: '#3b82f6', fontSize: '16px', fontWeight: '600', marginBottom: '12px', margin: '0 0 12px 0' }}>
+            📋 Photo Guidelines
+          </h4>
+          <div style={{ fontSize: isMobile ? '12px' : '14px', color: '#cbd5e1' }}>
+            <p style={{ margin: '4px 0' }}>✓ Include doors/windows for scale reference</p>
+            <p style={{ margin: '4px 0' }}>✓ Capture all property boundaries</p>
+            <p style={{ margin: '4px 0' }}>✓ Show existing structures and utilities</p>
+            <p style={{ margin: '4px 0' }}>✓ Take photos from multiple angles</p>
+          </div>
         </div>
         
         {photos.length > 0 && (
