@@ -220,7 +220,98 @@ function LandscapeElement({ type, position, onSelect, selected }) {
   );
 }
 
-// Enhanced 3D Scene
+// Luxury Photo Upload Component
+function PhotoUpload({ onUpload, photos }) {
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    accept: { 'image/*': [] },
+    maxFiles: 10,
+    onDrop: onUpload
+  });
+
+  return (
+    <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+      <div style={{
+        background: 'linear-gradient(145deg, #1e293b 0%, #334155 100%)',
+        borderRadius: '24px',
+        padding: '40px',
+        border: '1px solid #475569',
+        boxShadow: '0 20px 60px rgba(0,0,0,0.3)'
+      }}>
+        <div 
+          {...getRootProps()} 
+          style={{
+            border: isDragActive ? '3px dashed #10b981' : '3px dashed #3b82f6',
+            borderRadius: '20px',
+            padding: '50px',
+            textAlign: 'center',
+            background: isDragActive ? 'rgba(16, 185, 129, 0.1)' : 'rgba(59, 130, 246, 0.05)',
+            cursor: 'pointer',
+            transition: 'all 0.3s ease'
+          }}
+        >
+          <input {...getInputProps()} />
+          <div style={{ fontSize: '4rem', marginBottom: '20px' }}>
+            {isDragActive ? '📥' : '📸'}
+          </div>
+          <h3 style={{ fontSize: '1.8rem', fontWeight: '700', color: '#f1f5f9', marginBottom: '16px' }}>
+            {isDragActive ? 'Drop Photos Here!' : 'Upload Site Photos'}
+          </h3>
+          <p style={{ color: '#94a3b8', marginBottom: '30px', fontSize: '16px' }}>
+            {isDragActive ? 'Release to upload' : 'Drop photos here or click to browse'}
+          </p>
+          <div style={{ fontSize: '16px', color: '#cbd5e1' }}>
+            <p>✓ Include doors/windows for scale reference</p>
+            <p>✓ Capture all property boundaries</p>
+            <p>✓ Show existing structures and utilities</p>
+            <p>✓ Take photos from multiple angles</p>
+          </div>
+        </div>
+        
+        {photos.length > 0 && (
+          <div style={{ marginTop: '30px' }}>
+            <h4 style={{ fontSize: '1.4rem', fontWeight: '700', color: '#f1f5f9', marginBottom: '20px' }}>
+              Uploaded Photos ({photos.length})
+            </h4>
+            <div style={{ 
+              display: 'grid', 
+              gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
+              gap: '20px'
+            }}>
+              {photos.map((photo, index) => (
+                <div key={index} style={{ position: 'relative' }}>
+                  <img 
+                    src={URL.createObjectURL(photo)} 
+                    alt={`Site Photo ${index + 1}`}
+                    style={{ 
+                      width: '100%', 
+                      height: '120px', 
+                      objectFit: 'cover', 
+                      borderRadius: '12px',
+                      border: '2px solid #475569'
+                    }}
+                  />
+                  <div style={{
+                    position: 'absolute',
+                    top: '8px',
+                    right: '8px',
+                    background: 'linear-gradient(135deg, #3b82f6 0%, #6366f1 100%)',
+                    color: 'white',
+                    fontSize: '12px',
+                    fontWeight: '700',
+                    padding: '4px 8px',
+                    borderRadius: '8px'
+                  }}>
+                    {index + 1}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
 function Scene({ designData, aiResults, onPoolSelect, hardscapeElements, landscapeElements, onElementSelect }) {
   return (
     <>
@@ -811,61 +902,29 @@ export default function BackyardAI() {
               </p>
             </div>
             
-            <div style={{ maxWidth: '900px', margin: '0 auto' }}>
-              <div style={{
-                background: 'linear-gradient(145deg, #1e293b 0%, #334155 100%)',
-                borderRadius: '24px',
-                padding: '40px',
-                border: '1px solid #475569',
-                boxShadow: '0 20px 60px rgba(0,0,0,0.3)'
-              }}>
-                <div style={{ fontSize: '4rem', textAlign: 'center', marginBottom: '20px' }}>📸</div>
-                <h3 style={{ fontSize: '1.8rem', fontWeight: '700', color: '#f1f5f9', textAlign: 'center', marginBottom: '16px' }}>
-                  Upload Site Photos
-                </h3>
-                <p style={{ color: '#94a3b8', textAlign: 'center', marginBottom: '30px', fontSize: '16px' }}>
-                  Professional analysis requires 5-10 high-quality photos
-                </p>
-                <div style={{ 
-                  border: '3px dashed #3b82f6', 
-                  borderRadius: '20px', 
-                  padding: '40px',
-                  textAlign: 'center',
-                  background: 'rgba(59, 130, 246, 0.05)',
-                  cursor: 'pointer',
-                  transition: 'all 0.3s ease'
-                }}>
-                  <div style={{ fontSize: '16px', color: '#cbd5e1', marginBottom: '20px' }}>
-                    <p>✓ Include doors/windows for scale reference</p>
-                    <p>✓ Capture all property boundaries</p>
-                    <p>✓ Show existing structures and utilities</p>
-                    <p>✓ Take photos from multiple angles</p>
-                  </div>
-                </div>
-              </div>
+            <PhotoUpload onUpload={handlePhotosUpload} photos={photos} />
               
-              {photos.length > 0 && (
-                <div style={{ textAlign: 'center', marginTop: '40px' }}>
-                  <button 
-                    onClick={handleProcessPhotos}
-                    style={{
-                      background: 'linear-gradient(135deg, #3b82f6 0%, #6366f1 100%)',
-                      color: 'white',
-                      padding: '20px 40px',
-                      borderRadius: '16px',
-                      border: 'none',
-                      fontSize: '1.2rem',
-                      fontWeight: '700',
-                      cursor: 'pointer',
-                      boxShadow: '0 10px 30px rgba(59, 130, 246, 0.4)',
-                      transition: 'all 0.3s ease'
-                    }}
-                  >
-                    🚀 Begin Professional Analysis
-                  </button>
-                </div>
-              )}
-            </div>
+            {photos.length > 0 && (
+              <div style={{ textAlign: 'center', marginTop: '40px' }}>
+                <button 
+                  onClick={handleProcessPhotos}
+                  style={{
+                    background: 'linear-gradient(135deg, #3b82f6 0%, #6366f1 100%)',
+                    color: 'white',
+                    padding: '20px 40px',
+                    borderRadius: '16px',
+                    border: 'none',
+                    fontSize: '1.2rem',
+                    fontWeight: '700',
+                    cursor: 'pointer',
+                    boxShadow: '0 10px 30px rgba(59, 130, 246, 0.4)',
+                    transition: 'all 0.3s ease'
+                  }}
+                >
+                  🚀 Begin Professional Analysis
+                </button>
+              </div>
+            )}
           </div>
         )}
         
