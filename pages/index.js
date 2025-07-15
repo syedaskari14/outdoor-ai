@@ -934,16 +934,42 @@ function LandscapeElement({ type, position, onSelect, selected, onDrag, seasonal
   );
 }
 
-// Enhanced Photo Upload with Smart Address Auto-Complete
+// Enhanced Photo Upload with Smart Address Auto-Complete - FIXED
 function PhotoUpload({ onUpload, photos, onAddressChange, address, isMobile }) {
   const [addressSuggestions, setAddressSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const fileInputRef = React.useRef(null);
   
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    accept: { 'image/*': [] },
-    maxFiles: 10,
-    onDrop: onUpload
-  });
+  // Simple file input handling
+  const handleFileChange = (event) => {
+    const files = Array.from(event.target.files);
+    console.log('Files selected:', files.length);
+    if (files.length > 0) {
+      onUpload(files);
+    }
+  };
+
+  const handleUploadClick = () => {
+    console.log('Upload clicked, triggering file input');
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const files = Array.from(e.dataTransfer.files);
+    console.log('Files dropped:', files.length);
+    if (files.length > 0) {
+      onUpload(files);
+    }
+  };
 
   // Real address suggestions using Google Places API
   const handleAddressInput = (value) => {
@@ -1167,7 +1193,7 @@ function PhotoUpload({ onUpload, photos, onAddressChange, address, isMobile }) {
         )}
       </div>
 
-      {/* Photo Upload Section */}
+      {/* Photo Upload Section - SIMPLIFIED */}
       <div style={{
         background: 'linear-gradient(145deg, #1e293b 0%, #334155 100%)',
         borderRadius: isMobile ? '16px' : '24px',
@@ -1175,72 +1201,75 @@ function PhotoUpload({ onUpload, photos, onAddressChange, address, isMobile }) {
         border: '1px solid #475569',
         boxShadow: '0 20px 60px rgba(0,0,0,0.3)'
       }}>
+        {/* Hidden file input */}
+        <input
+          ref={fileInputRef}
+          type="file"
+          multiple
+          accept="image/*"
+          onChange={handleFileChange}
+          style={{ display: 'none' }}
+        />
+        
+        {/* Upload area */}
         <div 
-          {...getRootProps()} 
+          onDragOver={handleDragOver}
+          onDrop={handleDrop}
+          onClick={handleUploadClick}
           style={{
-            border: isDragActive ? '3px dashed #10b981' : '3px dashed #3b82f6',
+            border: '3px dashed #3b82f6',
             borderRadius: isMobile ? '12px' : '20px',
             padding: isMobile ? '30px 20px' : '50px',
             textAlign: 'center',
-            background: isDragActive ? 'rgba(16, 185, 129, 0.1)' : 'rgba(59, 130, 246, 0.05)',
+            background: 'rgba(59, 130, 246, 0.05)',
             cursor: 'pointer',
-            transition: 'all 0.3s ease',
-            position: 'relative',
-            zIndex: 1
+            transition: 'all 0.3s ease'
           }}
-          onClick={(e) => {
-            console.log('Upload area clicked'); // Debug log
-            e.preventDefault();
-            e.stopPropagation();
+          onMouseEnter={(e) => {
+            e.target.style.borderColor = '#10b981';
+            e.target.style.background = 'rgba(16, 185, 129, 0.1)';
+          }}
+          onMouseLeave={(e) => {
+            e.target.style.borderColor = '#3b82f6';
+            e.target.style.background = 'rgba(59, 130, 246, 0.05)';
           }}
         >
-          <input {...getInputProps()} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', opacity: 0, cursor: 'pointer' }} />
-          <div style={{ fontSize: isMobile ? '3rem' : '4rem', marginBottom: '20px', pointerEvents: 'none' }}>
-            {isDragActive ? '📥' : '📸'}
+          <div style={{ fontSize: isMobile ? '3rem' : '4rem', marginBottom: '20px' }}>
+            📸
           </div>
-          <h3 style={{ fontSize: isMobile ? '1.4rem' : '1.8rem', fontWeight: '700', color: '#f1f5f9', marginBottom: '16px', pointerEvents: 'none' }}>
-            {isDragActive ? 'Drop Photos Here!' : 'Upload Site Photos'}
+          <h3 style={{ fontSize: isMobile ? '1.4rem' : '1.8rem', fontWeight: '700', color: '#f1f5f9', marginBottom: '16px' }}>
+            Upload Site Photos
           </h3>
-          <p style={{ color: '#94a3b8', marginBottom: '30px', fontSize: isMobile ? '14px' : '16px', pointerEvents: 'none' }}>
-            {isDragActive ? 'Release to upload' : 'Drop photos here or click to browse'}
+          <p style={{ color: '#94a3b8', marginBottom: '30px', fontSize: isMobile ? '14px' : '16px' }}>
+            Click here or drag photos to upload
           </p>
-          <div style={{ fontSize: isMobile ? '14px' : '16px', color: '#cbd5e1', pointerEvents: 'none' }}>
+          
+          <button
+            type="button"
+            onClick={handleUploadClick}
+            style={{
+              background: 'linear-gradient(135deg, #3b82f6 0%, #6366f1 100%)',
+              color: 'white',
+              border: 'none',
+              borderRadius: '12px',
+              padding: '16px 32px',
+              fontSize: '16px',
+              fontWeight: '700',
+              cursor: 'pointer',
+              boxShadow: '0 4px 15px rgba(59, 130, 246, 0.3)',
+              transition: 'all 0.3s ease',
+              marginBottom: '20px'
+            }}
+          >
+            📁 Choose Photos
+          </button>
+          
+          <div style={{ fontSize: isMobile ? '14px' : '16px', color: '#cbd5e1' }}>
             <p>✓ Include doors/windows for scale reference</p>
             <p>✓ Capture all property boundaries</p>
             <p>✓ Show existing structures and utilities</p>
             <p>✓ Take photos from multiple angles</p>
           </div>
-          
-          {/* Explicit click button for better UX */}
-          <button
-            type="button"
-            style={{
-              marginTop: '20px',
-              background: 'linear-gradient(135deg, #3b82f6 0%, #6366f1 100%)',
-              color: 'white',
-              border: 'none',
-              borderRadius: '12px',
-              padding: '12px 24px',
-              fontSize: '16px',
-              fontWeight: '600',
-              cursor: 'pointer',
-              boxShadow: '0 4px 15px rgba(59, 130, 246, 0.3)',
-              transition: 'all 0.3s ease',
-              pointerEvents: 'auto'
-            }}
-            onClick={(e) => {
-              console.log('Button clicked'); // Debug log
-              e.preventDefault();
-              e.stopPropagation();
-              // Trigger file input
-              const input = document.querySelector('input[type="file"]');
-              if (input) {
-                input.click();
-              }
-            }}
-          >
-            📁 Browse Files
-          </button>
         </div>
         
         {photos.length > 0 && (
