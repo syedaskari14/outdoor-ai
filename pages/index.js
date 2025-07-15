@@ -435,37 +435,62 @@ function PhotoUpload({ onUpload, photos, onAddressChange, address, isMobile }) {
 
   const fetchAddressSuggestions = async (input) => {
     try {
-      // Real implementation would use Google Places Autocomplete API
-      const googleMapsApiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+      // For now, provide smart mock suggestions based on common patterns
+      // In production, you'd create an API route to call Google Places
       
-      if (!googleMapsApiKey) {
-        console.log('Google Maps API key not configured');
-        setShowSuggestions(false);
-        return;
+      const commonStreets = ['Main', 'Oak', 'Park', 'First', 'Second', 'Third', 'Elm', 'Maple', 'Washington', 'Lincoln'];
+      const streetTypes = ['Street', 'Avenue', 'Road', 'Drive', 'Lane', 'Circle', 'Court', 'Way'];
+      const cities = [
+        { name: 'Atlanta', zip: '30309' },
+        { name: 'Decatur', zip: '30030' },
+        { name: 'Sandy Springs', zip: '30328' },
+        { name: 'Marietta', zip: '30060' },
+        { name: 'Roswell', zip: '30075' },
+        { name: 'Brookhaven', zip: '30319' },
+        { name: 'Dunwoody', zip: '30338' }
+      ];
+
+      let suggestions = [];
+
+      // If input looks like a number, suggest house numbers
+      if (/^\d+/.test(input)) {
+        const number = input.match(/^\d+/)[0];
+        suggestions = cities.slice(0, 5).map((city, index) => 
+          `${number} ${commonStreets[index]} ${streetTypes[index % streetTypes.length]}, ${city.name}, GA ${city.zip}`
+        );
+      }
+      // If input looks like a street name
+      else if (input.length > 2) {
+        const matchingStreets = commonStreets.filter(street => 
+          street.toLowerCase().startsWith(input.toLowerCase())
+        );
+        
+        if (matchingStreets.length > 0) {
+          suggestions = matchingStreets.slice(0, 3).flatMap(street => 
+            cities.slice(0, 2).map(city => 
+              `${Math.floor(Math.random() * 9000) + 1000} ${street} Street, ${city.name}, GA ${city.zip}`
+            )
+          ).slice(0, 5);
+        } else {
+          // Fallback suggestions
+          suggestions = [
+            `${input} Street, Atlanta, GA 30309`,
+            `${input} Avenue, Decatur, GA 30030`,
+            `${input} Road, Sandy Springs, GA 30328`,
+            `${input} Drive, Marietta, GA 30060`,
+            `${input} Lane, Roswell, GA 30075`
+          ];
+        }
       }
 
-      const response = await fetch(
-        `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${encodeURIComponent(input)}&types=address&components=country:us&key=${googleMapsApiKey}`,
-        {
-          method: 'GET',
-        }
-      );
-
-      if (response.ok) {
-        const data = await response.json();
-        if (data.predictions && data.predictions.length > 0) {
-          const suggestions = data.predictions.map(prediction => prediction.description);
-          setAddressSuggestions(suggestions.slice(0, 5));
-          setShowSuggestions(true);
-        } else {
-          setShowSuggestions(false);
-        }
+      if (suggestions.length > 0) {
+        setAddressSuggestions(suggestions);
+        setShowSuggestions(true);
       } else {
-        console.log('Failed to fetch address suggestions');
         setShowSuggestions(false);
       }
     } catch (error) {
-      console.log('Error fetching address suggestions:', error);
+      console.log('Error generating address suggestions:', error);
       setShowSuggestions(false);
     }
   };
