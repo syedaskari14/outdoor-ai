@@ -1184,25 +1184,63 @@ function PhotoUpload({ onUpload, photos, onAddressChange, address, isMobile }) {
             textAlign: 'center',
             background: isDragActive ? 'rgba(16, 185, 129, 0.1)' : 'rgba(59, 130, 246, 0.05)',
             cursor: 'pointer',
-            transition: 'all 0.3s ease'
+            transition: 'all 0.3s ease',
+            position: 'relative',
+            zIndex: 1
+          }}
+          onClick={(e) => {
+            console.log('Upload area clicked'); // Debug log
+            e.preventDefault();
+            e.stopPropagation();
           }}
         >
-          <input {...getInputProps()} />
-          <div style={{ fontSize: isMobile ? '3rem' : '4rem', marginBottom: '20px' }}>
+          <input {...getInputProps()} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', opacity: 0, cursor: 'pointer' }} />
+          <div style={{ fontSize: isMobile ? '3rem' : '4rem', marginBottom: '20px', pointerEvents: 'none' }}>
             {isDragActive ? '📥' : '📸'}
           </div>
-          <h3 style={{ fontSize: isMobile ? '1.4rem' : '1.8rem', fontWeight: '700', color: '#f1f5f9', marginBottom: '16px' }}>
+          <h3 style={{ fontSize: isMobile ? '1.4rem' : '1.8rem', fontWeight: '700', color: '#f1f5f9', marginBottom: '16px', pointerEvents: 'none' }}>
             {isDragActive ? 'Drop Photos Here!' : 'Upload Site Photos'}
           </h3>
-          <p style={{ color: '#94a3b8', marginBottom: '30px', fontSize: isMobile ? '14px' : '16px' }}>
+          <p style={{ color: '#94a3b8', marginBottom: '30px', fontSize: isMobile ? '14px' : '16px', pointerEvents: 'none' }}>
             {isDragActive ? 'Release to upload' : 'Drop photos here or click to browse'}
           </p>
-          <div style={{ fontSize: isMobile ? '14px' : '16px', color: '#cbd5e1' }}>
+          <div style={{ fontSize: isMobile ? '14px' : '16px', color: '#cbd5e1', pointerEvents: 'none' }}>
             <p>✓ Include doors/windows for scale reference</p>
             <p>✓ Capture all property boundaries</p>
             <p>✓ Show existing structures and utilities</p>
             <p>✓ Take photos from multiple angles</p>
           </div>
+          
+          {/* Explicit click button for better UX */}
+          <button
+            type="button"
+            style={{
+              marginTop: '20px',
+              background: 'linear-gradient(135deg, #3b82f6 0%, #6366f1 100%)',
+              color: 'white',
+              border: 'none',
+              borderRadius: '12px',
+              padding: '12px 24px',
+              fontSize: '16px',
+              fontWeight: '600',
+              cursor: 'pointer',
+              boxShadow: '0 4px 15px rgba(59, 130, 246, 0.3)',
+              transition: 'all 0.3s ease',
+              pointerEvents: 'auto'
+            }}
+            onClick={(e) => {
+              console.log('Button clicked'); // Debug log
+              e.preventDefault();
+              e.stopPropagation();
+              // Trigger file input
+              const input = document.querySelector('input[type="file"]');
+              if (input) {
+                input.click();
+              }
+            }}
+          >
+            📁 Browse Files
+          </button>
         </div>
         
         {photos.length > 0 && (
