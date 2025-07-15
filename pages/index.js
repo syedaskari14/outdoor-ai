@@ -1,7 +1,6 @@
 import React, { useState, useCallback, Suspense } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Environment, ContactShadows, Box, Plane, Sphere, Cylinder } from '@react-three/drei';
-import * as THREE from 'three';
 
 // Enhanced AI Processing with Address & Property Data
 class ContractorAI {
@@ -328,13 +327,56 @@ function Pool({ position = [0, 0, 0], size = [16, 8, 6], color = '#0066cc', onSe
   );
 }
 
-// Wrap with Error Boundary
-export default function BackyardAI() {
-  return (
-    <ErrorBoundary>
-      <BackyardAIComponent />
-    </ErrorBoundary>
-  );
+// Error Boundary Component
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    console.error('BackyardAI Error:', error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div style={{
+          minHeight: '100vh',
+          background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: 'white',
+          fontFamily: 'system-ui, sans-serif'
+        }}>
+          <div style={{ textAlign: 'center', padding: '40px' }}>
+            <h1 style={{ fontSize: '2rem', marginBottom: '20px' }}>⚠️ Something went wrong</h1>
+            <p style={{ marginBottom: '20px' }}>Please refresh the page to try again.</p>
+            <button 
+              onClick={() => window.location.reload()}
+              style={{
+                background: '#3b82f6',
+                color: 'white',
+                padding: '12px 24px',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: 'pointer'
+              }}
+            >
+              🔄 Refresh Page
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
 }
 
 // User-Friendly Hardscape Elements with Luxury Features
@@ -1187,9 +1229,9 @@ function PhotoUpload({ onUpload, photos, onAddressChange, address, isMobile }) {
           <h4 style={{ margin: '0 0 8px 0', fontSize: '14px', fontWeight: '700' }}>
             🛡️ Browser Compatibility
           </h4>
-          <p style={{ margin: 0, fontSize: '12px', lineHeight: '1.4' }}>
-            If upload doesn't work in <strong>Brave Browser</strong>: Click the Brave shield icon → Disable shields for this site, or try Chrome/Safari.
-          </p>
+         <p style={{ margin: 0, fontSize: '12px', lineHeight: '1.4' }}>
+  If upload doesn&apos;t work in <strong>Brave Browser</strong>: Click the Brave shield icon → Disable shields for this site, or try Chrome/Safari.
+</p>
         </div>
         
         {/* Main Upload Button */}
@@ -1299,6 +1341,7 @@ function PhotoUpload({ onUpload, photos, onAddressChange, address, isMobile }) {
     </div>
   );
 }
+
 // Advanced Scene with Time-of-Day and Environmental Controls
 function Scene({ designData, aiResults, onPoolSelect, hardscapeElements, landscapeElements, onElementSelect, onElementDrag, timeOfDay = 'sunset' }) {
   const [seasons, setSeasons] = useState('summer');
@@ -2208,58 +2251,6 @@ function ContractorControls({ designData, onUpdate, onExport, aiResults, onAddEl
   );
 }
 
-// Error Boundary Component
-class ErrorBoundary extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { hasError: false };
-  }
-
-  static getDerivedStateFromError(error) {
-    return { hasError: true };
-  }
-
-  componentDidCatch(error, errorInfo) {
-    console.error('BackyardAI Error:', error, errorInfo);
-  }
-
-  render() {
-    if (this.state.hasError) {
-      return (
-        <div style={{
-          minHeight: '100vh',
-          background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          color: 'white',
-          fontFamily: 'system-ui, sans-serif'
-        }}>
-          <div style={{ textAlign: 'center', padding: '40px' }}>
-            <h1 style={{ fontSize: '2rem', marginBottom: '20px' }}>⚠️ Something went wrong</h1>
-            <p style={{ marginBottom: '20px' }}>Please refresh the page to try again.</p>
-            <button 
-              onClick={() => window.location.reload()}
-              style={{
-                background: '#3b82f6',
-                color: 'white',
-                padding: '12px 24px',
-                border: 'none',
-                borderRadius: '8px',
-                cursor: 'pointer'
-              }}
-            >
-              🔄 Refresh Page
-            </button>
-          </div>
-        </div>
-      );
-    }
-
-    return this.props.children;
-  }
-}
-
 // Main Application with Advanced Environmental Controls
 function BackyardAIComponent() {
   const [step, setStep] = useState('upload');
@@ -2789,5 +2780,14 @@ function BackyardAIComponent() {
         )}
       </main>
     </div>
+  );
+}
+
+// Wrap with Error Boundary
+export default function BackyardAI() {
+  return (
+    <ErrorBoundary>
+      <BackyardAIComponent />
+    </ErrorBoundary>
   );
 }
