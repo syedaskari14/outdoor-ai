@@ -89,31 +89,57 @@ class ContractorAI {
 // Enhanced Pool with professional materials
 function Pool({ position = [0, 0, 0], size = [16, 8, 6], color = '#0066cc', onSelect, finish = 'plaster' }) {
   const [hovered, setHovered] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
   
   const finishes = {
-    plaster: '#e6f3ff',
-    pebble: '#d0d0d0',
-    tile: '#ffffff',
-    fiberglass: '#f0f8ff'
+    plaster: { 
+      shell: '#f0f8ff', 
+      description: 'White Plaster',
+      roughness: 0.6,
+      metalness: 0.0
+    },
+    pebble: { 
+      shell: '#8fbc8f', 
+      description: 'Pebble Tec',
+      roughness: 0.9,
+      metalness: 0.0
+    },
+    tile: { 
+      shell: '#4682b4', 
+      description: 'Ceramic Tile',
+      roughness: 0.1,
+      metalness: 0.2
+    },
+    fiberglass: { 
+      shell: '#87ceeb', 
+      description: 'Fiberglass',
+      roughness: 0.3,
+      metalness: 0.1
+    }
   };
+
+  const currentFinish = finishes[finish] || finishes.plaster;
   
   return (
     <group position={position}>
+      {/* Pool shell with realistic finish materials */}
       <Box
         args={[size[0], 2.5, size[1]]}
         position={[0, -1.25, 0]}
         onClick={onSelect}
         onPointerOver={() => setHovered(true)}
         onPointerOut={() => setHovered(false)}
+        onPointerDown={() => setIsDragging(true)}
+        onPointerUp={() => setIsDragging(false)}
       >
         <meshStandardMaterial 
-          color={hovered ? '#87ceeb' : finishes[finish]}
-          roughness={0.2}
-          metalness={0.05}
+          color={hovered || isDragging ? '#87ceeb' : currentFinish.shell}
+          roughness={currentFinish.roughness}
+          metalness={currentFinish.metalness}
         />
       </Box>
       
-      {/* Premium water with caustics effect */}
+      {/* Realistic water with depth and clarity */}
       <Plane
         args={[size[0], size[1]]}
         position={[0, 0.1, 0]}
@@ -129,9 +155,9 @@ function Pool({ position = [0, 0, 0], size = [16, 8, 6], color = '#0066cc', onSe
         />
       </Plane>
       
-      {/* Luxury coping */}
+      {/* Premium coping - natural stone */}
       <Box args={[size[0] + 1.5, 0.4, size[1] + 1.5]} position={[0, 0.3, 0]}>
-        <meshStandardMaterial color="#2c1810" roughness={0.3} metalness={0.1} />
+        <meshStandardMaterial color="#d2b48c" roughness={0.7} metalness={0.0} />
       </Box>
       
       {/* Pool equipment */}
@@ -142,80 +168,152 @@ function Pool({ position = [0, 0, 0], size = [16, 8, 6], color = '#0066cc', onSe
   );
 }
 
-// Hardscape Elements
-function HardscapeElement({ type, position, onSelect, selected }) {
+// Draggable Hardscape Elements
+function HardscapeElement({ type, position, onSelect, selected, onDrag }) {
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStart, setDragStart] = useState([0, 0]);
+  
   const elements = {
     deck: { 
       geometry: <Box args={[8, 0.2, 6]} />,
-      material: <meshStandardMaterial color={selected ? "#8B4513" : "#D2B48C"} roughness={0.7} />
+      material: <meshStandardMaterial color={selected || isDragging ? "#8B4513" : "#DEB887"} roughness={0.8} />
     },
     patio: {
       geometry: <Box args={[12, 0.15, 8]} />,
-      material: <meshStandardMaterial color={selected ? "#708090" : "#A9A9A9"} roughness={0.8} />
+      material: <meshStandardMaterial color={selected || isDragging ? "#696969" : "#A9A9A9"} roughness={0.9} />
     },
     pathway: {
       geometry: <Box args={[20, 0.1, 3]} />,
-      material: <meshStandardMaterial color={selected ? "#8B4513" : "#DEB887"} roughness={0.9} />
+      material: <meshStandardMaterial color={selected || isDragging ? "#8B4513" : "#DEB887"} roughness={0.9} />
     },
     retaining: {
       geometry: <Box args={[15, 3, 1]} />,
-      material: <meshStandardMaterial color={selected ? "#696969" : "#808080"} roughness={0.8} />
+      material: <meshStandardMaterial color={selected || isDragging ? "#2F4F4F" : "#708090"} roughness={0.8} />
     },
     firepit: {
       geometry: <Cylinder args={[2, 2, 0.5]} />,
-      material: <meshStandardMaterial color={selected ? "#8B0000" : "#A0522D"} roughness={0.6} />
+      material: <meshStandardMaterial color={selected || isDragging ? "#8B0000" : "#A0522D"} roughness={0.6} />
     }
   };
   
   const element = elements[type] || elements.deck;
   
+  const handlePointerDown = (event) => {
+    setIsDragging(true);
+    setDragStart([event.point.x, event.point.z]);
+    event.stopPropagation();
+  };
+  
+  const handlePointerMove = (event) => {
+    if (isDragging && onDrag) {
+      const newPosition = [
+        event.point.x,
+        position[1],
+        event.point.z
+      ];
+      onDrag(type, newPosition);
+    }
+  };
+  
+  const handlePointerUp = () => {
+    setIsDragging(false);
+    if (onSelect) onSelect(type);
+  };
+  
   return (
-    <group position={position} onClick={() => onSelect(type)}>
+    <group 
+      position={position}
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
+      onPointerUp={handlePointerUp}
+      style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
+    >
       {React.cloneElement(element.geometry, {
         children: element.material
       })}
+      {/* Visual feedback when dragging */}
+      {isDragging && (
+        <Box args={[0.5, 8, 0.5]} position={[0, 4, 0]}>
+          <meshStandardMaterial color="#00ff00" transparent opacity={0.6} />
+        </Box>
+      )}
     </group>
   );
 }
 
-// Landscape Elements
-function LandscapeElement({ type, position, onSelect, selected }) {
+// Draggable Landscape Elements
+function LandscapeElement({ type, position, onSelect, selected, onDrag }) {
+  const [isDragging, setIsDragging] = useState(false);
+  
   const elements = {
     tree: (
       <group>
         <Cylinder args={[0.3, 0.3, 4]} position={[0, 2, 0]}>
-          <meshStandardMaterial color="#8B4513" />
+          <meshStandardMaterial color="#8B4513" roughness={0.9} />
         </Cylinder>
         <Sphere args={[2.5]} position={[0, 5, 0]}>
-          <meshStandardMaterial color={selected ? "#32CD32" : "#228B22"} />
+          <meshStandardMaterial color={selected || isDragging ? "#32CD32" : "#228B22"} roughness={0.8} />
         </Sphere>
       </group>
     ),
     shrub: (
       <Sphere args={[1]} position={[0, 1, 0]}>
-        <meshStandardMaterial color={selected ? "#90EE90" : "#6B8E23"} />
+        <meshStandardMaterial color={selected || isDragging ? "#90EE90" : "#6B8E23"} roughness={0.9} />
       </Sphere>
     ),
     flower: (
       <group>
         <Cylinder args={[0.8, 0.8, 0.3]} position={[0, 0.15, 0]}>
-          <meshStandardMaterial color={selected ? "#FFB6C1" : "#FF69B4"} />
+          <meshStandardMaterial color={selected || isDragging ? "#FFB6C1" : "#FF69B4"} roughness={0.3} />
         </Cylinder>
         <Cylinder args={[1.2, 1.2, 0.2]} position={[0, 0.4, 0]}>
-          <meshStandardMaterial color="#32CD32" />
+          <meshStandardMaterial color="#32CD32" roughness={0.8} />
         </Cylinder>
       </group>
     ),
     grass: (
       <Box args={[4, 0.05, 4]} position={[0, 0.025, 0]}>
-        <meshStandardMaterial color={selected ? "#ADFF2F" : "#228B22"} />
+        <meshStandardMaterial color={selected || isDragging ? "#ADFF2F" : "#228B22"} roughness={0.95} />
       </Box>
     )
   };
   
+  const handlePointerDown = (event) => {
+    setIsDragging(true);
+    event.stopPropagation();
+  };
+  
+  const handlePointerMove = (event) => {
+    if (isDragging && onDrag) {
+      const newPosition = [
+        event.point.x,
+        position[1],
+        event.point.z
+      ];
+      onDrag(type, newPosition);
+    }
+  };
+  
+  const handlePointerUp = () => {
+    setIsDragging(false);
+    if (onSelect) onSelect(type);
+  };
+  
   return (
-    <group position={position} onClick={() => onSelect(type)}>
+    <group 
+      position={position}
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
+      onPointerUp={handlePointerUp}
+      style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
+    >
       {elements[type] || elements.shrub}
+      {/* Visual feedback when dragging */}
+      {isDragging && (
+        <Box args={[0.2, 5, 0.2]} position={[0, 2.5, 0]}>
+          <meshStandardMaterial color="#ffff00" transparent opacity={0.7} />
+        </Box>
+      )}
     </group>
   );
 }
@@ -312,7 +410,7 @@ function PhotoUpload({ onUpload, photos }) {
     </div>
   );
 }
-function Scene({ designData, aiResults, onPoolSelect, hardscapeElements, landscapeElements, onElementSelect }) {
+function Scene({ designData, aiResults, onPoolSelect, hardscapeElements, landscapeElements, onElementSelect, onElementDrag }) {
   return (
     <>
       <OrbitControls enablePan enableZoom enableRotate />
@@ -367,6 +465,7 @@ function Scene({ designData, aiResults, onPoolSelect, hardscapeElements, landsca
           position={element.position}
           selected={element.selected}
           onSelect={onElementSelect}
+          onDrag={(type, newPosition) => onElementDrag('hardscape', index, newPosition)}
         />
       ))}
       
@@ -378,6 +477,7 @@ function Scene({ designData, aiResults, onPoolSelect, hardscapeElements, landsca
           position={element.position}
           selected={element.selected}
           onSelect={onElementSelect}
+          onDrag={(type, newPosition) => onElementDrag('landscape', index, newPosition)}
         />
       ))}
       
@@ -807,6 +907,18 @@ export default function BackyardAI() {
     console.log(`Selected ${type} element`);
   }, []);
 
+  const handleElementDrag = useCallback((category, index, newPosition) => {
+    if (category === 'hardscape') {
+      setHardscapeElements(prev => prev.map((element, i) => 
+        i === index ? { ...element, position: newPosition } : element
+      ));
+    } else if (category === 'landscape') {
+      setLandscapeElements(prev => prev.map((element, i) => 
+        i === index ? { ...element, position: newPosition } : element
+      ));
+    }
+  }, []);
+
   const handleExport = useCallback((type) => {
     if (type === 'quote') {
       alert('Professional Quote Generated! 📋\n(In production: generates detailed PDF quote)');
@@ -1006,6 +1118,7 @@ export default function BackyardAI() {
                         landscapeElements={landscapeElements}
                         onPoolSelect={handlePoolSelect}
                         onElementSelect={handleElementSelect}
+                        onElementDrag={handleElementDrag}
                       />
                     </Suspense>
                   </Canvas>
