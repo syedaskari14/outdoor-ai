@@ -420,25 +420,52 @@ function PhotoUpload({ onUpload, photos, onAddressChange, address }) {
     onDrop: onUpload
   });
 
-  // Mock address suggestions (in real app, would use Google Places API)
+  // Real address suggestions using Google Places API
   const handleAddressInput = (value) => {
     onAddressChange(value);
     
     if (value.length > 3) {
-      // Simulate API call to Google Places Autocomplete
-      const mockSuggestions = [
-        `${value} Street, Atlanta, GA 30309`,
-        `${value} Avenue, Atlanta, GA 30307`,
-        `${value} Road, Decatur, GA 30030`,
-        `${value} Drive, Sandy Springs, GA 30328`,
-        `${value} Lane, Brookhaven, GA 30319`
-      ].filter(suggestion => 
-        suggestion.toLowerCase().includes(value.toLowerCase())
-      );
-      
-      setAddressSuggestions(mockSuggestions.slice(0, 5));
-      setShowSuggestions(true);
+      // Real Google Places Autocomplete API call
+      fetchAddressSuggestions(value);
     } else {
+      setShowSuggestions(false);
+      setAddressSuggestions([]);
+    }
+  };
+
+  const fetchAddressSuggestions = async (input) => {
+    try {
+      // Real implementation would use Google Places Autocomplete API
+      const googleMapsApiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+      
+      if (!googleMapsApiKey) {
+        console.log('Google Maps API key not configured');
+        setShowSuggestions(false);
+        return;
+      }
+
+      const response = await fetch(
+        `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${encodeURIComponent(input)}&types=address&components=country:us&key=${googleMapsApiKey}`,
+        {
+          method: 'GET',
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.predictions && data.predictions.length > 0) {
+          const suggestions = data.predictions.map(prediction => prediction.description);
+          setAddressSuggestions(suggestions.slice(0, 5));
+          setShowSuggestions(true);
+        } else {
+          setShowSuggestions(false);
+        }
+      } else {
+        console.log('Failed to fetch address suggestions');
+        setShowSuggestions(false);
+      }
+    } catch (error) {
+      console.log('Error fetching address suggestions:', error);
       setShowSuggestions(false);
     }
   };
@@ -449,27 +476,27 @@ function PhotoUpload({ onUpload, photos, onAddressChange, address }) {
   };
 
   return (
-    <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
+    <div style={{ maxWidth: window.innerWidth > 768 ? '1000px' : '100%', margin: '0 auto', padding: window.innerWidth > 768 ? '0' : '0 10px' }}>
       {/* Address Input Section */}
       <div style={{
         background: 'linear-gradient(145deg, #1e293b 0%, #334155 100%)',
-        borderRadius: '24px',
-        padding: '30px',
+        borderRadius: window.innerWidth > 768 ? '24px' : '16px',
+        padding: window.innerWidth > 768 ? '30px' : '20px',
         border: '1px solid #475569',
         boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
-        marginBottom: '30px'
+        marginBottom: '20px'
       }}>
-        <h3 style={{ fontSize: '1.6rem', fontWeight: '700', color: '#f1f5f9', marginBottom: '16px', textAlign: 'center' }}>
+        <h3 style={{ fontSize: window.innerWidth > 768 ? '1.6rem' : '1.3rem', fontWeight: '700', color: '#f1f5f9', marginBottom: '16px', textAlign: 'center' }}>
           🏠 Property Address
         </h3>
-        <p style={{ color: '#94a3b8', textAlign: 'center', marginBottom: '20px', fontSize: '14px' }}>
+        <p style={{ color: '#94a3b8', textAlign: 'center', marginBottom: '20px', fontSize: window.innerWidth > 768 ? '14px' : '13px' }}>
           Address provides local building codes, permit costs, and property dimensions
         </p>
         
         <div style={{ position: 'relative' }}>
           <input
             type="text"
-            placeholder="Enter property address (e.g., 123 Main St, Atlanta, GA 30309)"
+            placeholder={window.innerWidth > 768 ? "Enter property address (e.g., 123 Main St, Atlanta, GA 30309)" : "Enter property address"}
             value={address}
             onChange={(e) => handleAddressInput(e.target.value)}
             onFocus={(e) => {
@@ -482,24 +509,25 @@ function PhotoUpload({ onUpload, photos, onAddressChange, address }) {
             }}
             style={{
               width: '100%',
-              padding: '16px 20px',
+              padding: window.innerWidth > 768 ? '16px 50px 16px 20px' : '14px 45px 14px 16px',
               borderRadius: '12px',
               border: '2px solid #475569',
               background: 'linear-gradient(135deg, #334155 0%, #475569 100%)',
               color: '#f1f5f9',
-              fontSize: '16px',
+              fontSize: window.innerWidth > 768 ? '16px' : '14px',
               fontWeight: '500',
               outline: 'none',
-              transition: 'all 0.3s ease'
+              transition: 'all 0.3s ease',
+              boxSizing: 'border-box'
             }}
           />
           <div style={{
             position: 'absolute',
-            right: '16px',
+            right: window.innerWidth > 768 ? '16px' : '12px',
             top: '50%',
             transform: 'translateY(-50%)',
             color: '#94a3b8',
-            fontSize: '20px'
+            fontSize: window.innerWidth > 768 ? '20px' : '18px'
           }}>
             📍
           </div>
@@ -559,8 +587,8 @@ function PhotoUpload({ onUpload, photos, onAddressChange, address }) {
       {/* Photo Upload Section */}
       <div style={{
         background: 'linear-gradient(145deg, #1e293b 0%, #334155 100%)',
-        borderRadius: '24px',
-        padding: '40px',
+        borderRadius: window.innerWidth > 768 ? '24px' : '16px',
+        padding: window.innerWidth > 768 ? '40px' : '25px',
         border: '1px solid #475569',
         boxShadow: '0 20px 60px rgba(0,0,0,0.3)'
       }}>
@@ -568,8 +596,8 @@ function PhotoUpload({ onUpload, photos, onAddressChange, address }) {
           {...getRootProps()} 
           style={{
             border: isDragActive ? '3px dashed #10b981' : '3px dashed #3b82f6',
-            borderRadius: '20px',
-            padding: '50px',
+            borderRadius: window.innerWidth > 768 ? '20px' : '12px',
+            padding: window.innerWidth > 768 ? '50px' : '30px 20px',
             textAlign: 'center',
             background: isDragActive ? 'rgba(16, 185, 129, 0.1)' : 'rgba(59, 130, 246, 0.05)',
             cursor: 'pointer',
@@ -577,16 +605,16 @@ function PhotoUpload({ onUpload, photos, onAddressChange, address }) {
           }}
         >
           <input {...getInputProps()} />
-          <div style={{ fontSize: '4rem', marginBottom: '20px' }}>
+          <div style={{ fontSize: window.innerWidth > 768 ? '4rem' : '3rem', marginBottom: '20px' }}>
             {isDragActive ? '📥' : '📸'}
           </div>
-          <h3 style={{ fontSize: '1.8rem', fontWeight: '700', color: '#f1f5f9', marginBottom: '16px' }}>
+          <h3 style={{ fontSize: window.innerWidth > 768 ? '1.8rem' : '1.4rem', fontWeight: '700', color: '#f1f5f9', marginBottom: '16px' }}>
             {isDragActive ? 'Drop Photos Here!' : 'Upload Site Photos'}
           </h3>
-          <p style={{ color: '#94a3b8', marginBottom: '30px', fontSize: '16px' }}>
+          <p style={{ color: '#94a3b8', marginBottom: '30px', fontSize: window.innerWidth > 768 ? '16px' : '14px' }}>
             {isDragActive ? 'Release to upload' : 'Drop photos here or click to browse'}
           </p>
-          <div style={{ fontSize: '16px', color: '#cbd5e1' }}>
+          <div style={{ fontSize: window.innerWidth > 768 ? '16px' : '14px', color: '#cbd5e1' }}>
             <p>✓ Include doors/windows for scale reference</p>
             <p>✓ Capture all property boundaries</p>
             <p>✓ Show existing structures and utilities</p>
@@ -596,13 +624,13 @@ function PhotoUpload({ onUpload, photos, onAddressChange, address }) {
         
         {photos.length > 0 && (
           <div style={{ marginTop: '30px' }}>
-            <h4 style={{ fontSize: '1.4rem', fontWeight: '700', color: '#f1f5f9', marginBottom: '20px' }}>
+            <h4 style={{ fontSize: window.innerWidth > 768 ? '1.4rem' : '1.2rem', fontWeight: '700', color: '#f1f5f9', marginBottom: '20px' }}>
               Uploaded Photos ({photos.length})
             </h4>
             <div style={{ 
               display: 'grid', 
-              gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
-              gap: '20px'
+              gridTemplateColumns: window.innerWidth > 768 ? 'repeat(auto-fill, minmax(180px, 1fr))' : 'repeat(auto-fill, minmax(140px, 1fr))',
+              gap: window.innerWidth > 768 ? '20px' : '15px'
             }}>
               {photos.map((photo, index) => (
                 <div key={index} style={{ position: 'relative' }}>
@@ -611,7 +639,7 @@ function PhotoUpload({ onUpload, photos, onAddressChange, address }) {
                     alt={`Site Photo ${index + 1}`}
                     style={{ 
                       width: '100%', 
-                      height: '120px', 
+                      height: window.innerWidth > 768 ? '120px' : '100px', 
                       objectFit: 'cover', 
                       borderRadius: '12px',
                       border: '2px solid #475569'
@@ -1266,30 +1294,31 @@ export default function BackyardAI() {
         <div style={{
           maxWidth: '1400px',
           margin: '0 auto',
-          padding: '0 30px',
+          padding: '0 20px',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          height: '80px'
+          height: '70px',
+          flexWrap: 'wrap',
+          gap: '10px'
         }}>
-          <div style={{ display: 'flex', alignItems: 'center' }}>
+          <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '15px' }}>
             <h1 style={{ 
-              fontSize: '2.5rem', 
+              fontSize: window.innerWidth > 768 ? '2.5rem' : '1.8rem', 
               fontWeight: '800', 
               background: 'linear-gradient(135deg, #3b82f6 0%, #6366f1 100%)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
-              margin: 0,
-              marginRight: '24px'
+              margin: 0
             }}>
               BackyardAI
             </h1>
             <div style={{
               background: 'linear-gradient(135deg, #059669 0%, #10b981 100%)',
               color: 'white',
-              padding: '8px 16px',
-              borderRadius: '20px',
-              fontSize: '14px',
+              padding: '6px 12px',
+              borderRadius: '16px',
+              fontSize: '12px',
               fontWeight: '600'
             }}>
               Professional Edition
@@ -1298,9 +1327,9 @@ export default function BackyardAI() {
           <div style={{
             background: 'linear-gradient(135deg, #1e293b 0%, #334155 100%)',
             color: '#cbd5e1',
-            padding: '12px 20px',
-            borderRadius: '16px',
-            fontSize: '14px',
+            padding: '8px 16px',
+            borderRadius: '12px',
+            fontSize: '12px',
             fontWeight: '600',
             border: '1px solid #475569'
           }}>
@@ -1310,25 +1339,27 @@ export default function BackyardAI() {
       </nav>
 
       {/* Main content */}
-      <main style={{ maxWidth: '1400px', margin: '0 auto', padding: '40px 30px' }}>
+      <main style={{ maxWidth: '1400px', margin: '0 auto', padding: window.innerWidth > 768 ? '40px 30px' : '20px 15px' }}>
         {step === 'upload' && (
           <div>
-            <div style={{ textAlign: 'center', marginBottom: '60px' }}>
+            <div style={{ textAlign: 'center', marginBottom: window.innerWidth > 768 ? '60px' : '30px' }}>
               <h2 style={{ 
-                fontSize: '3.5rem', 
+                fontSize: window.innerWidth > 768 ? '3.5rem' : '2.2rem', 
                 fontWeight: '800', 
                 color: '#f1f5f9',
                 marginBottom: '20px',
-                textShadow: '0 4px 20px rgba(0,0,0,0.3)'
+                textShadow: '0 4px 20px rgba(0,0,0,0.3)',
+                lineHeight: '1.2'
               }}>
                 Professional Pool & Landscape Design
               </h2>
               <p style={{ 
-                fontSize: '1.4rem', 
+                fontSize: window.innerWidth > 768 ? '1.4rem' : '1.1rem', 
                 color: '#94a3b8',
                 marginBottom: '40px',
-                maxWidth: '800px',
-                margin: '0 auto 40px auto'
+                maxWidth: window.innerWidth > 768 ? '800px' : '100%',
+                margin: '0 auto 40px auto',
+                padding: '0 10px'
               }}>
                 AI-powered analysis with precise measurements, code compliance, and professional estimates
               </p>
