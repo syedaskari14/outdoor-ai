@@ -933,47 +933,19 @@ function LandscapeElement({ type, position, onSelect, selected, onDrag, seasonal
   );
 }
 
-// Enhanced Photo Upload with Smart Address Auto-Complete - SUPER SIMPLE FIX
+// SIMPLIFIED Photo Upload - Using Working Method 1 Approach
 function PhotoUpload({ onUpload, photos, onAddressChange, address, isMobile }) {
   const [addressSuggestions, setAddressSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const [isDragOver, setIsDragOver] = useState(false);
   
-  // Handle file selection - SIMPLE
+  // SIMPLE file handler - Method 1 that works
   const handleFileChange = (event) => {
-    console.log('File change event:', event);
+    console.log('BackyardAI file change:', event.target.files);
     const files = Array.from(event.target.files || []);
-    console.log('Files selected:', files.length);
+    console.log('BackyardAI files array:', files.length);
     
     if (files.length > 0) {
-      onUpload(files);
-      // Reset input so same file can be selected again
-      event.target.value = '';
-    }
-  };
-
-  // Handle drag events
-  const handleDragOver = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragOver(true);
-  };
-
-  const handleDragLeave = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragOver(false);
-  };
-
-  const handleDrop = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragOver(false);
-    
-    const files = Array.from(e.dataTransfer?.files || []);
-    console.log('Files dropped:', files.length);
-    
-    if (files.length > 0) {
+      console.log('BackyardAI calling onUpload with:', files);
       onUpload(files);
     }
   };
@@ -983,7 +955,6 @@ function PhotoUpload({ onUpload, photos, onAddressChange, address, isMobile }) {
     onAddressChange(value);
     
     if (value.length > 3) {
-      // Real Google Places Autocomplete API call
       fetchAddressSuggestions(value);
     } else {
       setShowSuggestions(false);
@@ -995,7 +966,6 @@ function PhotoUpload({ onUpload, photos, onAddressChange, address, isMobile }) {
     try {
       console.log('Fetching address suggestions for:', input);
       
-      // Call our Next.js API route
       const response = await fetch('/api/places-autocomplete', {
         method: 'POST',
         headers: {
@@ -1008,7 +978,6 @@ function PhotoUpload({ onUpload, photos, onAddressChange, address, isMobile }) {
 
       if (!response.ok) {
         console.error('API Error:', data.error);
-        // Fallback to smart suggestions if API fails
         provideFallbackSuggestions(input);
         return;
       }
@@ -1020,12 +989,10 @@ function PhotoUpload({ onUpload, photos, onAddressChange, address, isMobile }) {
         console.log('Google Places suggestions:', suggestions);
       } else {
         console.log('No Google Places suggestions found');
-        // Provide fallback suggestions
         provideFallbackSuggestions(input);
       }
     } catch (error) {
       console.error('Error fetching Google Places suggestions:', error);
-      // Fallback to smart suggestions
       provideFallbackSuggestions(input);
     }
   };
@@ -1047,15 +1014,12 @@ function PhotoUpload({ onUpload, photos, onAddressChange, address, isMobile }) {
 
     let suggestions = [];
 
-    // If input looks like a number, suggest house numbers
     if (/^\d+/.test(input)) {
       const number = input.match(/^\d+/)[0];
       suggestions = cities.slice(0, 5).map((city, index) => 
         `${number} ${commonStreets[index]} ${streetTypes[index % streetTypes.length]}, ${city.name}, GA ${city.zip}`
       );
-    }
-    // If input looks like a street name
-    else if (input.length > 2) {
+    } else if (input.length > 2) {
       const matchingStreets = commonStreets.filter(street => 
         street.toLowerCase().startsWith(input.toLowerCase())
       );
@@ -1067,7 +1031,6 @@ function PhotoUpload({ onUpload, photos, onAddressChange, address, isMobile }) {
           )
         ).slice(0, 5);
       } else {
-        // Fallback suggestions
         suggestions = [
           `${input} Street, Atlanta, GA 30309`,
           `${input} Avenue, Decatur, GA 30030`,
@@ -1148,7 +1111,6 @@ function PhotoUpload({ onUpload, photos, onAddressChange, address, isMobile }) {
             📍
           </div>
 
-          {/* Address Suggestions Dropdown */}
           {showSuggestions && addressSuggestions.length > 0 && (
             <div style={{
               position: 'absolute',
@@ -1200,7 +1162,7 @@ function PhotoUpload({ onUpload, photos, onAddressChange, address, isMobile }) {
         )}
       </div>
 
-      {/* Photo Upload Section - ULTRA SIMPLE */}
+      {/* SIMPLIFIED Photo Upload - METHOD 1 APPROACH */}
       <div style={{
         background: 'linear-gradient(145deg, #1e293b 0%, #334155 100%)',
         borderRadius: isMobile ? '16px' : '24px',
@@ -1212,10 +1174,10 @@ function PhotoUpload({ onUpload, photos, onAddressChange, address, isMobile }) {
           📸 Upload Site Photos
         </h3>
         
-        {/* DIRECT FILE INPUT - NO HIDING */}
-        <div style={{ textAlign: 'center', marginBottom: '30px' }}>
+        {/* METHOD 1: Simple Label + Input (PROVEN TO WORK) */}
+        <div style={{ textAlign: 'center', marginBottom: '20px' }}>
           <label 
-            htmlFor="photo-upload"
+            htmlFor="backyardai-photo-upload"
             style={{
               display: 'inline-block',
               background: 'linear-gradient(135deg, #3b82f6 0%, #6366f1 100%)',
@@ -1241,7 +1203,7 @@ function PhotoUpload({ onUpload, photos, onAddressChange, address, isMobile }) {
             📁 Choose Photos to Upload
           </label>
           <input
-            id="photo-upload"
+            id="backyardai-photo-upload"
             type="file"
             multiple
             accept="image/*"
@@ -1254,35 +1216,13 @@ function PhotoUpload({ onUpload, photos, onAddressChange, address, isMobile }) {
           />
         </div>
         
-        {/* Alternative: Drag & Drop Area */}
-        <div 
-          onDragOver={handleDragOver}
-          onDragLeave={handleDragLeave}
-          onDrop={handleDrop}
-          style={{
-            border: isDragOver ? '3px dashed #10b981' : '3px dashed #64748b',
-            borderRadius: isMobile ? '12px' : '20px',
-            padding: isMobile ? '30px 20px' : '40px',
-            textAlign: 'center',
-            background: isDragOver ? 'rgba(16, 185, 129, 0.1)' : 'rgba(100, 116, 139, 0.05)',
-            transition: 'all 0.3s ease',
-            marginBottom: '20px'
-          }}
-        >
-          <div style={{ fontSize: isMobile ? '2.5rem' : '3rem', marginBottom: '16px' }}>
-            {isDragOver ? '📥' : '📂'}
-          </div>
-          <p style={{ color: '#94a3b8', fontSize: isMobile ? '14px' : '16px', margin: 0 }}>
-            {isDragOver ? 'Drop Photos Here!' : 'Or drag and drop photos here'}
-          </p>
-        </div>
-        
         {/* Instructions */}
         <div style={{ 
           background: 'rgba(59, 130, 246, 0.05)',
           borderRadius: '12px',
           padding: '20px',
-          marginBottom: '20px'
+          marginBottom: '20px',
+          textAlign: 'center'
         }}>
           <h4 style={{ color: '#3b82f6', fontSize: '16px', fontWeight: '600', marginBottom: '12px', margin: '0 0 12px 0' }}>
             📋 Photo Guidelines
