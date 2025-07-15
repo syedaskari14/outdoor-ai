@@ -328,6 +328,15 @@ function Pool({ position = [0, 0, 0], size = [16, 8, 6], color = '#0066cc', onSe
   );
 }
 
+// Wrap with Error Boundary
+export default function BackyardAI() {
+  return (
+    <ErrorBoundary>
+      <BackyardAIComponent />
+    </ErrorBoundary>
+  );
+}
+
 // User-Friendly Hardscape Elements with Luxury Features
 function HardscapeElement({ type, position, onSelect, selected, onDrag }) {
   const [isDragging, setIsDragging] = useState(false);
@@ -2191,8 +2200,60 @@ function ContractorControls({ designData, onUpdate, onExport, aiResults, onAddEl
   );
 }
 
+// Error Boundary Component
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    console.error('BackyardAI Error:', error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div style={{
+          minHeight: '100vh',
+          background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: 'white',
+          fontFamily: 'system-ui, sans-serif'
+        }}>
+          <div style={{ textAlign: 'center', padding: '40px' }}>
+            <h1 style={{ fontSize: '2rem', marginBottom: '20px' }}>⚠️ Something went wrong</h1>
+            <p style={{ marginBottom: '20px' }}>Please refresh the page to try again.</p>
+            <button 
+              onClick={() => window.location.reload()}
+              style={{
+                background: '#3b82f6',
+                color: 'white',
+                padding: '12px 24px',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: 'pointer'
+              }}
+            >
+              🔄 Refresh Page
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
+
 // Main Application with Advanced Environmental Controls
-export default function BackyardAI() {
+function BackyardAIComponent() {
   const [step, setStep] = useState('upload');
   const [photos, setPhotos] = useState([]);
   const [address, setAddress] = useState('');
@@ -2250,6 +2311,32 @@ export default function BackyardAI() {
       if (document.head.contains(favicon)) {
         document.head.removeChild(favicon);
       }
+    };
+  }, []);
+
+  // Suppress common console errors that don't affect functionality
+  React.useEffect(() => {
+    const originalError = console.error;
+    console.error = (...args) => {
+      const message = args[0]?.toString() || '';
+      
+      // Suppress known harmless errors
+      if (
+        message.includes('extension port is moved into back/forward cache') ||
+        message.includes('message channel is closed') ||
+        message.includes('Invalid frameId') ||
+        message.includes('background-redux') ||
+        message.includes('React Router Future Flag')
+      ) {
+        return; // Don't log these errors
+      }
+      
+      // Log all other errors normally
+      originalError.apply(console, args);
+    };
+
+    return () => {
+      console.error = originalError;
     };
   }, []);
 
