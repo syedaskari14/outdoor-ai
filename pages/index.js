@@ -658,7 +658,7 @@ export default function BackyardAI() {
                       🎮 Drag to rotate • Scroll to zoom • Right-click to pan
                     </div>
                     <div style={{ fontSize: '14px', fontWeight: '500' }}>
-                      Backyard: {designData.backyard.dimensions.length}' × {designData.backyard.dimensions.width}'
+                      Backyard: {designData.backyard.dimensions.length}&apos; × {designData.backyard.dimensions.width}&apos;
                     </div>
                   </div>
                 </div>
