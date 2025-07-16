@@ -1,7 +1,8 @@
 import React, { useState, useCallback, Suspense } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Environment, ContactShadows, Box, Plane, Sphere, Cylinder } from '@react-three/drei';
-import { EnhancedPool, PoolShapeSelector, PoolFinishSelector } from './EnhancedPool'; // ADD THIS LINE
+import { EnhancedPool, PoolShapeSelector, PoolFinishSelector } from '../components/EnhancedPool';
+
 
 // Enhanced AI Processing with Address & Property Data
 class ContractorAI {
