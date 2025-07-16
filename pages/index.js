@@ -1,6 +1,7 @@
 import React, { useState, useCallback, Suspense } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Environment, ContactShadows, Box, Plane, Sphere, Cylinder } from '@react-three/drei';
+import { EnhancedPool, PoolShapeSelector, PoolFinishSelector } from './EnhancedPool'; // ADD THIS LINE
 
 // Enhanced AI Processing with Address & Property Data
 class ContractorAI {
@@ -153,178 +154,6 @@ class ContractorAI {
       }
     };
   }
-}
-
-// Enhanced Pool with Physics-Based Water Simulation - WATER VISIBLE FIX
-function Pool({ position = [0, 0, 0], size = [16, 8, 6], color = '#0066cc', onSelect, finish = 'plaster', timeOfDay = 'sunset' }) {
-  const [hovered, setHovered] = useState(false);
-  const [isDragging, setIsDragging] = useState(false);
-  const waterRef = React.useRef();
-  const causticsRef = React.useRef();
-  
-  // Animate water surface and caustics
-  useFrame((state) => {
-    if (waterRef.current) {
-      // Subtle water movement
-      waterRef.current.position.y = 0.15 + Math.sin(state.clock.elapsedTime * 0.5) * 0.02;
-      waterRef.current.rotation.z = Math.sin(state.clock.elapsedTime * 0.2) * 0.005;
-    }
-    
-    if (causticsRef.current) {
-      // Animated caustic patterns
-      causticsRef.current.rotation.z = state.clock.elapsedTime * 0.1;
-      if (causticsRef.current.material) {
-        causticsRef.current.material.opacity = 0.3 + Math.sin(state.clock.elapsedTime * 2) * 0.1;
-      }
-    }
-  });
-  
-  const finishes = {
-    plaster: { 
-      shell: '#ffffff', 
-      description: 'White Plaster',
-      roughness: 0.7,
-      metalness: 0.0
-    },
-    pebble: { 
-      shell: '#4a7c59', 
-      description: 'Pebble Tec',
-      roughness: 0.9,
-      metalness: 0.0
-    },
-    tile: { 
-      shell: '#1e3a8a', 
-      description: 'Ceramic Tile',
-      roughness: 0.1,
-      metalness: 0.4
-    },
-    fiberglass: { 
-      shell: '#0ea5e9', 
-      description: 'Fiberglass',
-      roughness: 0.2,
-      metalness: 0.1
-    }
-  };
-
-  const currentFinish = finishes[finish] || finishes.plaster;
-  
-  // Water color based on time of day - BLUE FOCUSED
-  const waterColors = {
-    sunrise: '#87CEEB',
-    morning: '#4169E1',
-    noon: '#1e40af',
-    afternoon: '#2563eb',
-    sunset: '#3b82f6',
-    evening: '#1e3a8a',
-    night: '#1e293b'
-  };
-  
-  const currentWaterColor = waterColors[timeOfDay] || waterColors.sunset;
-  
-  console.log('Pool render - finish:', finish, 'shell color:', currentFinish.shell); // Debug
-  
-  return (
-    <group position={position}>
-      {/* Pool excavation hole */}
-      <Box
-        args={[size[0] + 2, 2, size[1] + 2]}
-        position={[0, -1, 0]}
-      >
-        <meshStandardMaterial color="#654321" roughness={0.9} />
-      </Box>
-
-      {/* Pool shell with finish materials */}
-      <Box
-        args={[size[0], 1.6, size[1]]}
-        position={[0, -0.8, 0]}
-        onClick={onSelect}
-        onPointerOver={() => setHovered(true)}
-        onPointerOut={() => setHovered(false)}
-        onPointerDown={() => setIsDragging(true)}
-        onPointerUp={() => setIsDragging(false)}
-      >
-        <meshStandardMaterial 
-          color={hovered || isDragging ? '#ffff00' : currentFinish.shell}
-          roughness={currentFinish.roughness}
-          metalness={currentFinish.metalness}
-        />
-      </Box>
-      
-      {/* Pool coping - SMALLER so water shows */}
-      <Box args={[size[0] + 0.5, 0.1, size[1] + 0.5]} position={[0, 0.05, 0]}>
-        <meshStandardMaterial 
-          color="#d4af9a" 
-          roughness={0.8} 
-          metalness={0.0}
-        />
-      </Box>
-      
-      {/* WATER - CLEARLY VISIBLE ABOVE EVERYTHING */}
-      <Plane
-        ref={waterRef}
-        args={[size[0] - 1, size[1] - 1]}
-        position={[0, 0.15, 0]}
-        rotation={[-Math.PI / 2, 0, 0]}
-      >
-        <meshStandardMaterial 
-          color={currentWaterColor}
-          transparent
-          opacity={0.8}
-          roughness={0.0}
-          metalness={0.1}
-          envMapIntensity={2.0}
-        />
-      </Plane>
-      
-      {/* Pool steps with finish color */}
-      <Box args={[2, 0.8, 0.8]} position={[size[0]/2 - 1, -0.4, size[1]/2 - 0.4]}>
-        <meshStandardMaterial 
-          color={currentFinish.shell} 
-          roughness={currentFinish.roughness}
-          metalness={currentFinish.metalness}
-        />
-      </Box>
-      
-      {/* Pool equipment */}
-      <Cylinder args={[0.3, 0.3, 0.6]} position={[size[0]/2 + 1.2, 0.3, size[1]/2]}>
-        <meshStandardMaterial 
-          color="#666666" 
-          roughness={0.3}
-          metalness={0.7}
-        />
-      </Cylinder>
-
-      {/* LED lights UNDERWATER */}
-      <Sphere args={[0.1]} position={[size[0]/4, 0.0, size[1]/4]}>
-        <meshStandardMaterial 
-          color="#ffffff" 
-          emissive="#4a90e2" 
-          emissiveIntensity={0.8}
-        />
-      </Sphere>
-      <Sphere args={[0.1]} position={[-size[0]/4, 0.0, -size[1]/4]}>
-        <meshStandardMaterial 
-          color="#ffffff" 
-          emissive="#4a90e2" 
-          emissiveIntensity={0.8}
-        />
-      </Sphere>
-      
-      {/* Pool lighting effects */}
-      <pointLight 
-        position={[size[0]/4, 0.2, size[1]/4]} 
-        color="#4a90e2" 
-        intensity={0.5} 
-        distance={10}
-      />
-      <pointLight 
-        position={[-size[0]/4, 0.2, -size[1]/4]} 
-        color="#4a90e2" 
-        intensity={0.5} 
-        distance={10}
-      />
-    </group>
-  );
 }
 
 // Error Boundary Component
@@ -1512,17 +1341,20 @@ function Scene({ designData, aiResults, onPoolSelect, hardscapeElements, landsca
       
       {/* Enhanced Pool with time-of-day effects */}
       {designData.pool && (
-        <Pool 
-          key={`pool-${designData.pool.finish}-${designData.pool.size[0]}-${designData.pool.size[1]}`}
-          position={designData.pool.position}
-          size={designData.pool.size}
-          color={designData.pool.color}
-          finish={designData.pool.finish}
-          onSelect={onPoolSelect}
-          timeOfDay={timeOfDay}
-        />
-      )}
-      
+       <EnhancedPool 
+  key={`pool-${designData.pool.finish}-${designData.pool.size[0]}-${designData.pool.size[1]}`}
+  position={designData.pool.position}
+  size={designData.pool.size}
+  shape={designData.pool.shape || 'rectangle'}
+  finish={designData.pool.finish}
+  onSelect={onPoolSelect}
+  timeOfDay={timeOfDay}
+  hasInfinityEdge={designData.pool.hasInfinityEdge}
+  hasSpillover={designData.pool.hasSpillover}
+  lighting="led"
+/>
+)}
+
       {/* Hardscape Elements with enhanced materials */}
       {hardscapeElements.map((element, index) => (
         <HardscapeElement
@@ -1696,82 +1528,115 @@ function ContractorControls({ designData, onUpdate, onExport, aiResults, onAddEl
       </div>
       
       {/* Pool Controls */}
-      {activeTab === 'pool' && (
-        <div style={{ color: 'white' }}>
-          <h3 style={{ fontSize: '20px', fontWeight: '700', marginBottom: '24px', color: '#f1f5f9' }}>
-            🏊 Pool Configuration
-          </h3>
-          
-          <div style={{ marginBottom: '24px' }}>
-            <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', marginBottom: '12px', color: '#cbd5e1' }}>
-              Pool Finish
-            </label>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
-              {['plaster', 'pebble', 'tile', 'fiberglass'].map(finish => (
-                <button
-                  key={finish}
-                  onClick={() => onUpdate('pool', 'finish', finish)}
-                  style={{
-                    ...luxuryButtonStyle,
-                    background: designData.pool?.finish === finish 
-                      ? 'linear-gradient(135deg, #3b82f6 0%, #6366f1 100%)'
-                      : 'linear-gradient(135deg, #475569 0%, #64748b 100%)',
-                    textTransform: 'capitalize'
-                  }}
-                >
-                  {finish}
-                </button>
-              ))}
-            </div>
-          </div>
-          
-          <div style={{ marginBottom: '24px' }}>
-            <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', marginBottom: '12px', color: '#cbd5e1' }}>
-              Dimensions
-            </label>
-            <div style={{ marginBottom: '16px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
-                <span style={{ minWidth: '60px', color: '#94a3b8' }}>Length:</span>
-                <input 
-                  type="range" 
-                  min="20" 
-                  max="50" 
-                  value={designData.pool?.size[0] || 16}
-                  onChange={(e) => onUpdate('pool', 'length', parseInt(e.target.value))}
-                  style={{ 
-                    flex: 1, 
-                    accentColor: '#3b82f6',
-                    backgroundColor: '#334155',
-                    borderRadius: '8px'
-                  }}
-                />
-                <span style={{ minWidth: '50px', color: '#f1f5f9', fontWeight: '600' }}>
-                  {designData.pool?.size[0] || 16}ft
-                </span>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <span style={{ minWidth: '60px', color: '#94a3b8' }}>Width:</span>
-                <input 
-                  type="range" 
-                  min="12" 
-                  max="30" 
-                  value={designData.pool?.size[1] || 8}
-                  onChange={(e) => onUpdate('pool', 'width', parseInt(e.target.value))}
-                  style={{ 
-                    flex: 1, 
-                    accentColor: '#3b82f6',
-                    backgroundColor: '#334155',
-                    borderRadius: '8px'
-                  }}
-                />
-                <span style={{ minWidth: '50px', color: '#f1f5f9', fontWeight: '600' }}>
-                  {designData.pool?.size[1] || 8}ft
-                </span>
-              </div>
-            </div>
-          </div>
+ {/* Pool Controls */}
+{activeTab === 'pool' && (
+  <div style={{ color: 'white' }}>
+    <h3 style={{ fontSize: '20px', fontWeight: '700', marginBottom: '24px', color: '#f1f5f9' }}>
+      🏊 Pool Configuration
+    </h3>
+    
+    <PoolShapeSelector 
+      currentShape={designData.pool?.shape || 'rectangle'}
+      onShapeChange={(shape) => onUpdate('pool', 'shape', shape)}
+      designData={designData}
+    />
+    
+    <PoolFinishSelector 
+      currentFinish={designData.pool?.finish || 'plaster'}
+      onFinishChange={(finish) => onUpdate('pool', 'finish', finish)}
+    />
+    
+    {/* Dimensions */}
+    <div style={{ marginBottom: '24px' }}>
+      <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', marginBottom: '12px', color: '#cbd5e1' }}>
+        Dimensions
+      </label>
+      <div style={{ marginBottom: '16px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
+          <span style={{ minWidth: '60px', color: '#94a3b8' }}>Length:</span>
+          <input 
+            type="range" 
+            min="20" 
+            max="50" 
+            value={designData.pool?.size[0] || 24}
+            onChange={(e) => onUpdate('pool', 'length', parseInt(e.target.value))}
+            style={{ 
+              flex: 1, 
+              accentColor: '#3b82f6',
+              backgroundColor: '#334155',
+              borderRadius: '8px'
+            }}
+          />
+          <span style={{ minWidth: '50px', color: '#f1f5f9', fontWeight: '600' }}>
+            {designData.pool?.size[0] || 24}ft
+          </span>
         </div>
-      )}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <span style={{ minWidth: '60px', color: '#94a3b8' }}>Width:</span>
+          <input 
+            type="range" 
+            min="12" 
+            max="30" 
+            value={designData.pool?.size[2] || 12}
+            onChange={(e) => onUpdate('pool', 'width', parseInt(e.target.value))}
+            style={{ 
+              flex: 1, 
+              accentColor: '#3b82f6',
+              backgroundColor: '#334155',
+              borderRadius: '8px'
+            }}
+          />
+          <span style={{ minWidth: '50px', color: '#f1f5f9', fontWeight: '600' }}>
+            {designData.pool?.size[2] || 12}ft
+          </span>
+        </div>
+      </div>
+    </div>
+
+    {/* Premium Features */}
+    <div style={{ marginBottom: '24px' }}>
+      <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', marginBottom: '12px', color: '#cbd5e1' }}>
+        Premium Features
+      </label>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px' }}>
+        <button
+          onClick={() => onUpdate('pool', 'hasInfinityEdge', !designData.pool?.hasInfinityEdge)}
+          style={{
+            background: designData.pool?.hasInfinityEdge 
+              ? 'linear-gradient(135deg, #3b82f6 0%, #6366f1 100%)'
+              : 'linear-gradient(135deg, #475569 0%, #64748b 100%)',
+            color: 'white',
+            border: 'none',
+            borderRadius: '8px',
+            padding: '8px',
+            fontSize: '10px',
+            cursor: 'pointer'
+          }}
+        >
+          ♾️ Infinity Edge<br/>
+          <span style={{ fontSize: '8px', opacity: 0.8 }}>+$15,000</span>
+        </button>
+        <button
+          onClick={() => onUpdate('pool', 'hasSpillover', !designData.pool?.hasSpillover)}
+          style={{
+            background: designData.pool?.hasSpillover 
+              ? 'linear-gradient(135deg, #3b82f6 0%, #6366f1 100%)'
+              : 'linear-gradient(135deg, #475569 0%, #64748b 100%)',
+            color: 'white',
+            border: 'none',
+            borderRadius: '8px',
+            padding: '8px',
+            fontSize: '10px',
+            cursor: 'pointer'
+          }}
+        >
+          ♨️ Spillover Spa<br/>
+          <span style={{ fontSize: '8px', opacity: 0.8 }}>+$25,000</span>
+        </button>
+      </div>
+    </div>
+  </div>
+)}
 
       {/* Environment Controls - NEW TAB */}
       {activeTab === 'environment' && (
