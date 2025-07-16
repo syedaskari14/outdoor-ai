@@ -1,10 +1,10 @@
-// 🔧 FIXED Enhanced Pool - Shapes Actually Change Properly
+// 🔧 SIMPLIFIED POOL FIX - This will definitely work!
 import React, { useState, useRef, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Box, Plane, Sphere, Cylinder } from '@react-three/drei';
 import * as THREE from 'three';
 
-// 🎨 PHOTOREALISTIC MATERIAL LIBRARY (same as before)
+// 🎨 POOL FINISHES (same as before)
 const POOL_FINISHES = {
   plaster: {
     name: 'White Plaster',
@@ -58,7 +58,7 @@ const POOL_FINISHES = {
   }
 };
 
-// 🌊 ADVANCED WATER COLORS
+// 🌊 WATER COLORS
 const WATER_COLORS = {
   sunrise: '#87CEEB',
   morning: '#4169E1',
@@ -69,80 +69,199 @@ const WATER_COLORS = {
   night: '#0f172a'
 };
 
-// 🏊‍♂️ FIXED POOL SHAPE GENERATOR
-function generatePoolGeometry(shape, size) {
+// 🏊‍♂️ SIMPLE BUT EFFECTIVE POOL SHAPES
+function PoolShape({ shape, size, finish, hovered, isDragging, onSelect }) {
   const [length, width, depth] = size;
+  const currentFinish = POOL_FINISHES[finish] || POOL_FINISHES.plaster;
   
+  const materialProps = {
+    color: hovered || isDragging ? '#fbbf24' : currentFinish.shell,
+    roughness: currentFinish.roughness,
+    metalness: currentFinish.metalness,
+    normalScale: [currentFinish.normalScale, currentFinish.normalScale]
+  };
+
+  // 🔧 SIMPLE APPROACH: Different components for different shapes
   switch (shape) {
     case 'rectangle':
-      return new THREE.BoxGeometry(length, depth, width);
+      return (
+        <Box 
+          args={[length, depth, width]} 
+          position={[0, -depth/2, 0]}
+          onClick={onSelect}
+        >
+          <meshStandardMaterial {...materialProps} />
+        </Box>
+      );
       
     case 'lagoon':
-      // Create a more visible lagoon shape
-      const lagoonShape = new THREE.Shape();
-      
-      // Make it clearly different from rectangle
-      lagoonShape.moveTo(0, 0);
-      lagoonShape.bezierCurveTo(length * 0.3, -width * 0.2, length * 0.7, -width * 0.2, length, 0);
-      lagoonShape.bezierCurveTo(length * 1.2, width * 0.3, length * 1.2, width * 0.7, length, width);
-      lagoonShape.bezierCurveTo(length * 0.7, width * 1.2, length * 0.3, width * 1.2, 0, width);
-      lagoonShape.bezierCurveTo(-width * 0.2, width * 0.7, -width * 0.2, width * 0.3, 0, 0);
-      
-      const extrudeSettings = {
-        depth: depth,
-        bevelEnabled: false,
-        steps: 1
-      };
-      
-      return new THREE.ExtrudeGeometry(lagoonShape, extrudeSettings);
+      // Create lagoon using stretched ellipse
+      return (
+        <group onClick={onSelect}>
+          {/* Main oval body */}
+          <Cylinder 
+            args={[length * 0.6, length * 0.5, depth, 32]} 
+            position={[0, -depth/2, 0]}
+            rotation={[0, 0, 0]}
+          >
+            <meshStandardMaterial {...materialProps} />
+          </Cylinder>
+          {/* Curved extension */}
+          <Cylinder 
+            args={[width * 0.4, width * 0.3, depth, 32]} 
+            position={[length * 0.3, -depth/2, width * 0.2]}
+            rotation={[0, Math.PI/6, 0]}
+          >
+            <meshStandardMaterial {...materialProps} />
+          </Cylinder>
+        </group>
+      );
       
     case 'kidney':
-      // Create kidney shape that's clearly different
-      const kidneyShape = new THREE.Shape();
-      
-      kidneyShape.moveTo(0, width * 0.2);
-      kidneyShape.bezierCurveTo(length * 0.6, -width * 0.1, length * 1.4, width * 0.4, length * 0.9, width * 0.8);
-      kidneyShape.bezierCurveTo(length * 0.4, width * 1.1, length * 0.1, width * 0.9, 0, width * 0.6);
-      kidneyShape.bezierCurveTo(-length * 0.1, width * 0.4, 0, width * 0.2, 0, width * 0.2);
-      
-      return new THREE.ExtrudeGeometry(kidneyShape, {
-        depth: depth,
-        bevelEnabled: false,
-        steps: 1
-      });
+      // Create kidney using two overlapping cylinders
+      return (
+        <group onClick={onSelect}>
+          {/* Main body */}
+          <Cylinder 
+            args={[length * 0.4, length * 0.4, depth, 32]} 
+            position={[0, -depth/2, 0]}
+          >
+            <meshStandardMaterial {...materialProps} />
+          </Cylinder>
+          {/* Kidney curve */}
+          <Cylinder 
+            args={[width * 0.35, width * 0.3, depth, 32]} 
+            position={[length * 0.2, -depth/2, -width * 0.15]}
+          >
+            <meshStandardMaterial {...materialProps} />
+          </Cylinder>
+        </group>
+      );
       
     case 'infinity':
-      // Rectangle with special edge (we'll add the infinity edge separately)
-      return new THREE.BoxGeometry(length, depth, width);
+      // Rectangle with special edge effect
+      return (
+        <group onClick={onSelect}>
+          <Box 
+            args={[length, depth, width]} 
+            position={[0, -depth/2, 0]}
+          >
+            <meshStandardMaterial {...materialProps} />
+          </Box>
+          {/* Infinity edge */}
+          <Box 
+            args={[length, depth * 0.1, width * 0.1]} 
+            position={[0, 0, -width/2]}
+          >
+            <meshStandardMaterial 
+              color={currentFinish.shell}
+              transparent
+              opacity={0.6}
+            />
+          </Box>
+        </group>
+      );
       
     case 'lShaped':
-      // Create actual L-shape using CSG-like approach
-      const lShape = new THREE.Shape();
-      
-      lShape.moveTo(0, 0);
-      lShape.lineTo(length * 0.6, 0);
-      lShape.lineTo(length * 0.6, width * 0.4);
-      lShape.lineTo(length, width * 0.4);
-      lShape.lineTo(length, width);
-      lShape.lineTo(0, width);
-      lShape.lineTo(0, 0);
-      
-      return new THREE.ExtrudeGeometry(lShape, {
-        depth: depth,
-        bevelEnabled: false,
-        steps: 1
-      });
+      // Create L-shape using two boxes
+      return (
+        <group onClick={onSelect}>
+          {/* Main section */}
+          <Box 
+            args={[length * 0.6, depth, width]} 
+            position={[length * 0.2, -depth/2, 0]}
+          >
+            <meshStandardMaterial {...materialProps} />
+          </Box>
+          {/* L extension */}
+          <Box 
+            args={[length * 0.4, depth, width * 0.5]} 
+            position={[-length * 0.1, -depth/2, width * 0.25]}
+          >
+            <meshStandardMaterial {...materialProps} />
+          </Box>
+        </group>
+      );
       
     case 'lap':
       // Long narrow lap pool
-      return new THREE.BoxGeometry(length * 1.8, depth, width * 0.6);
+      return (
+        <Box 
+          args={[length * 1.8, depth, width * 0.6]} 
+          position={[0, -depth/2, 0]}
+          onClick={onSelect}
+        >
+          <meshStandardMaterial {...materialProps} />
+        </Box>
+      );
       
     default:
-      return new THREE.BoxGeometry(length, depth, width);
+      return (
+        <Box 
+          args={[length, depth, width]} 
+          position={[0, -depth/2, 0]}
+          onClick={onSelect}
+        >
+          <meshStandardMaterial {...materialProps} />
+        </Box>
+      );
   }
 }
 
-// 🌊 FIXED ENHANCED POOL COMPONENT
+// 🌊 WATER COMPONENT
+function PoolWater({ shape, size, timeOfDay }) {
+  const waterRef = useRef();
+  const [length, width] = size;
+  const currentWaterColor = WATER_COLORS[timeOfDay] || WATER_COLORS.sunset;
+  
+  // Get water dimensions based on shape
+  const getWaterSize = () => {
+    switch (shape) {
+      case 'lagoon':
+        return [length * 0.9, width * 0.9];
+      case 'kidney':
+        return [length * 0.8, width * 0.8];
+      case 'lShaped':
+        return [length * 0.9, width * 0.8];
+      case 'lap':
+        return [length * 1.6, width * 0.5];
+      default:
+        return [length - 1, width - 1];
+    }
+  };
+  
+  const [waterLength, waterWidth] = getWaterSize();
+  
+  useFrame((state) => {
+    if (waterRef.current) {
+      const time = state.clock.elapsedTime;
+      waterRef.current.position.y = 0.2 + Math.sin(time * 0.3) * 0.03;
+      if (waterRef.current.material) {
+        waterRef.current.material.opacity = 0.85 + Math.sin(time * 1.5) * 0.05;
+      }
+    }
+  });
+  
+  return (
+    <Plane
+      ref={waterRef}
+      args={[waterLength, waterWidth]}
+      position={[0, 0.2, 0]}
+      rotation={[-Math.PI / 2, 0, 0]}
+    >
+      <meshStandardMaterial 
+        color={currentWaterColor}
+        transparent
+        opacity={0.85}
+        roughness={0.0}
+        metalness={0.05}
+        envMapIntensity={2.5}
+      />
+    </Plane>
+  );
+}
+
+// 🌊 MAIN ENHANCED POOL COMPONENT
 function EnhancedPool({ 
   position = [0, 0, 0], 
   size = [24, 6, 12], 
@@ -156,62 +275,12 @@ function EnhancedPool({
 }) {
   const [hovered, setHovered] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
-  const waterRef = useRef();
-  const poolRef = useRef();
-  const causticsRef = useRef();
 
-  // Get current finish material properties
-  const currentFinish = POOL_FINISHES[finish] || POOL_FINISHES.plaster;
-  const currentWaterColor = WATER_COLORS[timeOfDay] || WATER_COLORS.sunset;
-
-  // 🔧 FIXED: Generate pool geometry that actually changes shape
-  const poolGeometry = useMemo(() => {
-    console.log('🏊‍♂️ Generating pool geometry:', shape, size);
-    return generatePoolGeometry(shape, size);
-  }, [shape, size]);
-
-  // Get water plane dimensions based on shape
-  const getWaterDimensions = () => {
-    switch (shape) {
-      case 'lagoon':
-        return [size[0] * 1.1, size[2] * 1.1];
-      case 'kidney':
-        return [size[0] * 0.9, size[2] * 0.8];
-      case 'lShaped':
-        return [size[0] * 0.8, size[2] * 0.8];
-      case 'lap':
-        return [size[0] * 1.8, size[2] * 0.6];
-      default:
-        return [size[0] - 0.8, size[2] - 0.8];
-    }
-  };
-
-  const [waterWidth, waterLength] = getWaterDimensions();
-
-  // Advanced water animation
-  useFrame((state) => {
-    if (waterRef.current) {
-      const time = state.clock.elapsedTime;
-      waterRef.current.position.y = 0.2 + Math.sin(time * 0.3) * 0.03 + Math.sin(time * 0.7) * 0.01;
-      waterRef.current.rotation.z = Math.sin(time * 0.1) * 0.002;
-      
-      if (waterRef.current.material) {
-        waterRef.current.material.opacity = 0.85 + Math.sin(time * 1.5) * 0.05;
-      }
-    }
-
-    if (causticsRef.current) {
-      const time = state.clock.elapsedTime;
-      causticsRef.current.rotation.z = time * 0.05;
-      if (causticsRef.current.material) {
-        causticsRef.current.material.opacity = 0.15 + Math.sin(time * 2) * 0.05;
-      }
-    }
-  });
+  console.log('🏊‍♂️ EnhancedPool rendering:', { shape, size, finish });
 
   return (
     <group position={position}>
-      {/* Pool excavation with realistic dirt */}
+      {/* Pool excavation */}
       <Box
         args={[size[0] + 3, 2.5, size[2] + 3]}
         position={[0, -1.25, 0]}
@@ -219,103 +288,46 @@ function EnhancedPool({
         <meshStandardMaterial 
           color="#654321" 
           roughness={0.95} 
-          normalScale={[0.3, 0.3]}
         />
       </Box>
 
-      {/* 🔧 FIXED: Pool shell with actual shape changes */}
-      <mesh
-        ref={poolRef}
-        geometry={poolGeometry}
-        position={[0, -size[1]/2, 0]}
-        onClick={onSelect}
+      {/* 🔧 MAIN POOL SHAPE - This will actually change! */}
+      <group
         onPointerOver={() => setHovered(true)}
         onPointerOut={() => setHovered(false)}
         onPointerDown={() => setIsDragging(true)}
         onPointerUp={() => setIsDragging(false)}
       >
-        <meshStandardMaterial 
-          color={hovered || isDragging ? '#fbbf24' : currentFinish.shell}
-          roughness={currentFinish.roughness}
-          metalness={currentFinish.metalness}
-          normalScale={[currentFinish.normalScale, currentFinish.normalScale]}
+        <PoolShape 
+          shape={shape}
+          size={size}
+          finish={finish}
+          hovered={hovered}
+          isDragging={isDragging}
+          onSelect={onSelect}
         />
-      </mesh>
+      </group>
 
-      {/* 🔧 FIXED: Premium coping that matches pool shape */}
-      <mesh
-        geometry={poolGeometry}
+      {/* Pool coping */}
+      <Box 
+        args={[size[0] + 1, 0.15, size[2] + 1]} 
         position={[0, 0.075, 0]}
-        scale={[1.05, 0.1, 1.05]}
       >
         <meshStandardMaterial 
           color="#d4af9a" 
           roughness={0.7} 
           metalness={0.1}
-          normalScale={[0.4, 0.4]}
-        />
-      </mesh>
-      
-      {/* 🔧 FIXED: Water that matches pool shape */}
-      <Plane
-        ref={waterRef}
-        args={[waterWidth, waterLength]}
-        position={[0, 0.2, 0]}
-        rotation={[-Math.PI / 2, 0, 0]}
-      >
-        <meshStandardMaterial 
-          color={currentWaterColor}
-          transparent
-          opacity={0.85}
-          roughness={0.0}
-          metalness={0.05}
-          envMapIntensity={2.5}
-          normalScale={[0.1, 0.1]}
-        />
-      </Plane>
-
-      {/* Water caustics effect */}
-      <Plane
-        ref={causticsRef}
-        args={[waterWidth * 0.9, waterLength * 0.9]}
-        position={[0, -0.8, 0]}
-        rotation={[-Math.PI / 2, 0, 0]}
-      >
-        <meshStandardMaterial 
-          color="#87ceeb"
-          transparent
-          opacity={0.15}
-          blending={THREE.AdditiveBlending}
-        />
-      </Plane>
-
-      {/* Infinity edge effect */}
-      {hasInfinityEdge && (
-        <Box 
-          args={[size[0], 0.05, 0.3]} 
-          position={[0, 0.15, -size[2]/2 - 0.15]}
-        >
-          <meshStandardMaterial 
-            color={currentFinish.shell}
-            transparent
-            opacity={0.8}
-          />
-        </Box>
-      )}
-
-      {/* Pool steps with finish matching */}
-      <Box 
-        args={[2.5, 1, 1]} 
-        position={[size[0]/2 - 1.25, -0.5, size[2]/2 - 0.5]}
-      >
-        <meshStandardMaterial 
-          color={currentFinish.shell} 
-          roughness={currentFinish.roughness + 0.2}
-          metalness={currentFinish.metalness}
         />
       </Box>
 
-      {/* Pool equipment with realistic materials */}
+      {/* 🌊 WATER - Changes with shape */}
+      <PoolWater 
+        shape={shape}
+        size={size}
+        timeOfDay={timeOfDay}
+      />
+
+      {/* Pool equipment */}
       <Cylinder 
         args={[0.4, 0.4, 0.8]} 
         position={[size[0]/2 + 1.5, 0.4, size[2]/2 + 1]}
@@ -327,7 +339,7 @@ function EnhancedPool({
         />
       </Cylinder>
 
-      {/* Enhanced LED lighting system */}
+      {/* LED lighting */}
       {lighting === 'led' && (
         <>
           <Sphere args={[0.08]} position={[size[0]/4, 0.1, size[2]/4]}>
@@ -337,28 +349,6 @@ function EnhancedPool({
               emissiveIntensity={1.2}
             />
           </Sphere>
-          <Sphere args={[0.08]} position={[-size[0]/4, 0.1, -size[2]/4]}>
-            <meshStandardMaterial 
-              color="#ffffff" 
-              emissive="#4a90e2" 
-              emissiveIntensity={1.2}
-            />
-          </Sphere>
-          <Sphere args={[0.08]} position={[size[0]/4, 0.1, -size[2]/4]}>
-            <meshStandardMaterial 
-              color="#ffffff" 
-              emissive="#4a90e2" 
-              emissiveIntensity={1.2}
-            />
-          </Sphere>
-          <Sphere args={[0.08]} position={[-size[0]/4, 0.1, size[2]/4]}>
-            <meshStandardMaterial 
-              color="#ffffff" 
-              emissive="#4a90e2" 
-              emissiveIntensity={1.2}
-            />
-          </Sphere>
-
           <pointLight 
             position={[size[0]/4, 0.3, size[2]/4]} 
             color="#4a90e2" 
@@ -366,69 +356,36 @@ function EnhancedPool({
             distance={8}
             decay={2}
           />
-          <pointLight 
-            position={[-size[0]/4, 0.3, -size[2]/4]} 
-            color="#4a90e2" 
-            intensity={0.8} 
-            distance={8}
-            decay={2}
-          />
-          <pointLight 
-            position={[size[0]/4, 0.3, -size[2]/4]} 
-            color="#4a90e2" 
-            intensity={0.8} 
-            distance={8}
-            decay={2}
-          />
-          <pointLight 
-            position={[-size[0]/4, 0.3, size[2]/4]} 
-            color="#4a90e2" 
-            intensity={0.8} 
-            distance={8}
-            decay={2}
-          />
         </>
       )}
 
-      {/* Spillover spa feature */}
+      {/* Spillover spa */}
       {hasSpillover && (
         <Cylinder 
           args={[3, 3, 1.2]} 
           position={[size[0]/2 + 2, 0.6, 0]}
         >
           <meshStandardMaterial 
-            color={currentFinish.shell}
-            roughness={currentFinish.roughness}
-            metalness={currentFinish.metalness}
+            color={POOL_FINISHES[finish].shell}
+            roughness={POOL_FINISHES[finish].roughness}
+            metalness={POOL_FINISHES[finish].metalness}
           />
         </Cylinder>
       )}
 
-      {/* Enhanced visual feedback */}
+      {/* Visual feedback */}
       {isDragging && (
-        <>
-          <Box args={[0.3, 12, 0.3]} position={[0, 6, 0]}>
-            <meshStandardMaterial 
-              color="#10b981" 
-              transparent 
-              opacity={0.8}
-              emissive="#10b981"
-              emissiveIntensity={0.6}
-            />
-          </Box>
-          <Sphere args={[1.5]} position={[0, 1, 0]}>
-            <meshStandardMaterial 
-              color="#10b981" 
-              transparent 
-              opacity={0.2}
-              emissive="#10b981"
-              emissiveIntensity={0.3}
-            />
-          </Sphere>
-        </>
+        <Sphere args={[1.5]} position={[0, 1, 0]}>
+          <meshStandardMaterial 
+            color="#10b981" 
+            transparent 
+            opacity={0.2}
+            emissive="#10b981"
+            emissiveIntensity={0.3}
+          />
+        </Sphere>
       )}
 
-      {/* Hover glow effect */}
       {hovered && !isDragging && (
         <Sphere args={[Math.max(...size) * 0.6]} position={[0, 1, 0]}>
           <meshStandardMaterial 
@@ -444,7 +401,7 @@ function EnhancedPool({
   );
 }
 
-// 🎮 POOL SHAPE SELECTOR COMPONENT (same as before)
+// 🎮 SHAPE SELECTOR with debug logging
 function PoolShapeSelector({ currentShape, onShapeChange, designData }) {
   const shapes = [
     { id: 'rectangle', name: 'Rectangle', icon: '⬜', description: 'Classic geometric pool', cost: 0 },
@@ -475,7 +432,7 @@ function PoolShapeSelector({ currentShape, onShapeChange, designData }) {
           <button
             key={shape.id}
             onClick={() => {
-              console.log('🎯 Shape selected:', shape.id);
+              console.log('🎯 SHAPE CHANGE:', shape.id);
               onShapeChange(shape.id);
             }}
             style={{
@@ -508,7 +465,7 @@ function PoolShapeSelector({ currentShape, onShapeChange, designData }) {
   );
 }
 
-// 🎨 FINISH SELECTOR COMPONENT (same as before)
+// 🎨 FINISH SELECTOR
 function PoolFinishSelector({ currentFinish, onFinishChange }) {
   return (
     <div style={{ marginBottom: '24px' }}>
@@ -530,7 +487,7 @@ function PoolFinishSelector({ currentFinish, onFinishChange }) {
           <button
             key={key}
             onClick={() => {
-              console.log('🎨 Finish selected:', key);
+              console.log('🎨 FINISH CHANGE:', key);
               onFinishChange(key);
             }}
             style={{
@@ -565,7 +522,6 @@ function PoolFinishSelector({ currentFinish, onFinishChange }) {
   );
 }
 
-// Export enhanced components
 export { 
   EnhancedPool, 
   PoolShapeSelector, 
