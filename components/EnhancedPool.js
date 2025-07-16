@@ -1,12 +1,10 @@
-// 🏊‍♂️ Enhanced Pool System with Organic Shapes & Photorealistic Materials
-// This replaces your current Pool component with MUCH better visuals
-
+// 🔧 FIXED Enhanced Pool - Shapes Actually Change Properly
 import React, { useState, useRef, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { Box, Plane, Sphere, Cylinder, useTexture } from '@react-three/drei';
+import { Box, Plane, Sphere, Cylinder } from '@react-three/drei';
 import * as THREE from 'three';
 
-// 🎨 PHOTOREALISTIC MATERIAL LIBRARY
+// 🎨 PHOTOREALISTIC MATERIAL LIBRARY (same as before)
 const POOL_FINISHES = {
   plaster: {
     name: 'White Plaster',
@@ -71,7 +69,7 @@ const WATER_COLORS = {
   night: '#0f172a'
 };
 
-// 🏊‍♂️ POOL SHAPE GENERATOR
+// 🏊‍♂️ FIXED POOL SHAPE GENERATOR
 function generatePoolGeometry(shape, size) {
   const [length, width, depth] = size;
   
@@ -80,69 +78,71 @@ function generatePoolGeometry(shape, size) {
       return new THREE.BoxGeometry(length, depth, width);
       
     case 'lagoon':
-      // Organic lagoon shape using multiple curves
+      // Create a more visible lagoon shape
       const lagoonShape = new THREE.Shape();
-      const centerX = length / 2;
-      const centerY = width / 2;
       
-      // Create organic curved outline
-      lagoonShape.moveTo(centerX * 0.3, 0);
-      lagoonShape.bezierCurveTo(centerX * 1.2, centerY * 0.2, centerX * 1.1, centerY * 0.8, centerX * 0.9, centerY);
-      lagoonShape.bezierCurveTo(centerX * 0.7, centerY * 1.3, centerX * 0.3, centerY * 1.2, centerX * 0.1, centerY * 0.8);
-      lagoonShape.bezierCurveTo(-centerX * 0.1, centerY * 0.4, centerX * 0.1, centerY * 0.1, centerX * 0.3, 0);
+      // Make it clearly different from rectangle
+      lagoonShape.moveTo(0, 0);
+      lagoonShape.bezierCurveTo(length * 0.3, -width * 0.2, length * 0.7, -width * 0.2, length, 0);
+      lagoonShape.bezierCurveTo(length * 1.2, width * 0.3, length * 1.2, width * 0.7, length, width);
+      lagoonShape.bezierCurveTo(length * 0.7, width * 1.2, length * 0.3, width * 1.2, 0, width);
+      lagoonShape.bezierCurveTo(-width * 0.2, width * 0.7, -width * 0.2, width * 0.3, 0, 0);
       
       const extrudeSettings = {
         depth: depth,
-        bevelEnabled: true,
-        bevelSegments: 8,
-        steps: 2,
-        bevelSize: 0.3,
-        bevelThickness: 0.2
+        bevelEnabled: false,
+        steps: 1
       };
       
       return new THREE.ExtrudeGeometry(lagoonShape, extrudeSettings);
       
     case 'kidney':
-      // Kidney shape using curves
+      // Create kidney shape that's clearly different
       const kidneyShape = new THREE.Shape();
-      const kCenterX = length / 2;
-      const kCenterY = width / 2;
       
-      kidneyShape.moveTo(kCenterX * 0.2, kCenterY * 0.3);
-      kidneyShape.bezierCurveTo(kCenterX * 1.5, kCenterY * 0.1, kCenterX * 1.3, kCenterY * 0.9, kCenterX * 0.8, kCenterY);
-      kidneyShape.bezierCurveTo(kCenterX * 0.5, kCenterY * 1.2, kCenterX * 0.2, kCenterY * 1.1, kCenterX * 0.1, kCenterY * 0.7);
-      kidneyShape.bezierCurveTo(-kCenterX * 0.1, kCenterY * 0.5, kCenterX * 0.1, kCenterY * 0.2, kCenterX * 0.2, kCenterY * 0.3);
+      kidneyShape.moveTo(0, width * 0.2);
+      kidneyShape.bezierCurveTo(length * 0.6, -width * 0.1, length * 1.4, width * 0.4, length * 0.9, width * 0.8);
+      kidneyShape.bezierCurveTo(length * 0.4, width * 1.1, length * 0.1, width * 0.9, 0, width * 0.6);
+      kidneyShape.bezierCurveTo(-length * 0.1, width * 0.4, 0, width * 0.2, 0, width * 0.2);
       
       return new THREE.ExtrudeGeometry(kidneyShape, {
         depth: depth,
-        bevelEnabled: true,
-        bevelSegments: 6,
-        steps: 2,
-        bevelSize: 0.2,
-        bevelThickness: 0.1
+        bevelEnabled: false,
+        steps: 1
       });
       
     case 'infinity':
-      // Infinity edge pool (rectangle with vanishing edge effect)
+      // Rectangle with special edge (we'll add the infinity edge separately)
       return new THREE.BoxGeometry(length, depth, width);
       
     case 'lShaped':
-      // L-shaped pool using combined geometries
-      const shape1 = new THREE.BoxGeometry(length * 0.6, depth, width * 0.6);
-      const shape2 = new THREE.BoxGeometry(length * 0.4, depth, width * 0.4);
-      // Position offsets would be handled in the pool component
-      return shape1; // Simplified for now
+      // Create actual L-shape using CSG-like approach
+      const lShape = new THREE.Shape();
+      
+      lShape.moveTo(0, 0);
+      lShape.lineTo(length * 0.6, 0);
+      lShape.lineTo(length * 0.6, width * 0.4);
+      lShape.lineTo(length, width * 0.4);
+      lShape.lineTo(length, width);
+      lShape.lineTo(0, width);
+      lShape.lineTo(0, 0);
+      
+      return new THREE.ExtrudeGeometry(lShape, {
+        depth: depth,
+        bevelEnabled: false,
+        steps: 1
+      });
       
     case 'lap':
       // Long narrow lap pool
-      return new THREE.BoxGeometry(length * 1.5, depth, width * 0.5);
+      return new THREE.BoxGeometry(length * 1.8, depth, width * 0.6);
       
     default:
       return new THREE.BoxGeometry(length, depth, width);
   }
 }
 
-// 🌊 ENHANCED POOL COMPONENT
+// 🌊 FIXED ENHANCED POOL COMPONENT
 function EnhancedPool({ 
   position = [0, 0, 0], 
   size = [24, 6, 12], 
@@ -164,24 +164,42 @@ function EnhancedPool({
   const currentFinish = POOL_FINISHES[finish] || POOL_FINISHES.plaster;
   const currentWaterColor = WATER_COLORS[timeOfDay] || WATER_COLORS.sunset;
 
-  // Generate pool geometry based on shape
-  const poolGeometry = useMemo(() => generatePoolGeometry(shape, size), [shape, size]);
+  // 🔧 FIXED: Generate pool geometry that actually changes shape
+  const poolGeometry = useMemo(() => {
+    console.log('🏊‍♂️ Generating pool geometry:', shape, size);
+    return generatePoolGeometry(shape, size);
+  }, [shape, size]);
+
+  // Get water plane dimensions based on shape
+  const getWaterDimensions = () => {
+    switch (shape) {
+      case 'lagoon':
+        return [size[0] * 1.1, size[2] * 1.1];
+      case 'kidney':
+        return [size[0] * 0.9, size[2] * 0.8];
+      case 'lShaped':
+        return [size[0] * 0.8, size[2] * 0.8];
+      case 'lap':
+        return [size[0] * 1.8, size[2] * 0.6];
+      default:
+        return [size[0] - 0.8, size[2] - 0.8];
+    }
+  };
+
+  const [waterWidth, waterLength] = getWaterDimensions();
 
   // Advanced water animation
   useFrame((state) => {
     if (waterRef.current) {
-      // Realistic water movement
       const time = state.clock.elapsedTime;
       waterRef.current.position.y = 0.2 + Math.sin(time * 0.3) * 0.03 + Math.sin(time * 0.7) * 0.01;
       waterRef.current.rotation.z = Math.sin(time * 0.1) * 0.002;
       
-      // Update material properties for water shimmer
       if (waterRef.current.material) {
         waterRef.current.material.opacity = 0.85 + Math.sin(time * 1.5) * 0.05;
       }
     }
 
-    // Caustics animation
     if (causticsRef.current) {
       const time = state.clock.elapsedTime;
       causticsRef.current.rotation.z = time * 0.05;
@@ -205,7 +223,7 @@ function EnhancedPool({
         />
       </Box>
 
-      {/* Pool shell with enhanced materials */}
+      {/* 🔧 FIXED: Pool shell with actual shape changes */}
       <mesh
         ref={poolRef}
         geometry={poolGeometry}
@@ -224,10 +242,11 @@ function EnhancedPool({
         />
       </mesh>
 
-      {/* Premium coping with natural stone look */}
-      <Box 
-        args={[size[0] + 1, 0.15, size[2] + 1]} 
+      {/* 🔧 FIXED: Premium coping that matches pool shape */}
+      <mesh
+        geometry={poolGeometry}
         position={[0, 0.075, 0]}
+        scale={[1.05, 0.1, 1.05]}
       >
         <meshStandardMaterial 
           color="#d4af9a" 
@@ -235,12 +254,12 @@ function EnhancedPool({
           metalness={0.1}
           normalScale={[0.4, 0.4]}
         />
-      </Box>
-
-      {/* PHOTOREALISTIC WATER with advanced effects */}
+      </mesh>
+      
+      {/* 🔧 FIXED: Water that matches pool shape */}
       <Plane
         ref={waterRef}
-        args={[size[0] - 0.8, size[2] - 0.8]}
+        args={[waterWidth, waterLength]}
         position={[0, 0.2, 0]}
         rotation={[-Math.PI / 2, 0, 0]}
       >
@@ -258,7 +277,7 @@ function EnhancedPool({
       {/* Water caustics effect */}
       <Plane
         ref={causticsRef}
-        args={[size[0] - 0.5, size[2] - 0.5]}
+        args={[waterWidth * 0.9, waterLength * 0.9]}
         position={[0, -0.8, 0]}
         rotation={[-Math.PI / 2, 0, 0]}
       >
@@ -311,7 +330,6 @@ function EnhancedPool({
       {/* Enhanced LED lighting system */}
       {lighting === 'led' && (
         <>
-          {/* Underwater LED spots */}
           <Sphere args={[0.08]} position={[size[0]/4, 0.1, size[2]/4]}>
             <meshStandardMaterial 
               color="#ffffff" 
@@ -341,7 +359,6 @@ function EnhancedPool({
             />
           </Sphere>
 
-          {/* Pool lighting effects */}
           <pointLight 
             position={[size[0]/4, 0.3, size[2]/4]} 
             color="#4a90e2" 
@@ -427,7 +444,7 @@ function EnhancedPool({
   );
 }
 
-// 🎮 POOL SHAPE SELECTOR COMPONENT
+// 🎮 POOL SHAPE SELECTOR COMPONENT (same as before)
 function PoolShapeSelector({ currentShape, onShapeChange, designData }) {
   const shapes = [
     { id: 'rectangle', name: 'Rectangle', icon: '⬜', description: 'Classic geometric pool', cost: 0 },
@@ -457,7 +474,10 @@ function PoolShapeSelector({ currentShape, onShapeChange, designData }) {
         {shapes.map(shape => (
           <button
             key={shape.id}
-            onClick={() => onShapeChange(shape.id)}
+            onClick={() => {
+              console.log('🎯 Shape selected:', shape.id);
+              onShapeChange(shape.id);
+            }}
             style={{
               background: currentShape === shape.id 
                 ? 'linear-gradient(135deg, #3b82f6 0%, #6366f1 100%)'
@@ -488,7 +508,7 @@ function PoolShapeSelector({ currentShape, onShapeChange, designData }) {
   );
 }
 
-// 🎨 FINISH SELECTOR COMPONENT
+// 🎨 FINISH SELECTOR COMPONENT (same as before)
 function PoolFinishSelector({ currentFinish, onFinishChange }) {
   return (
     <div style={{ marginBottom: '24px' }}>
@@ -509,7 +529,10 @@ function PoolFinishSelector({ currentFinish, onFinishChange }) {
         {Object.entries(POOL_FINISHES).map(([key, finish]) => (
           <button
             key={key}
-            onClick={() => onFinishChange(key)}
+            onClick={() => {
+              console.log('🎨 Finish selected:', key);
+              onFinishChange(key);
+            }}
             style={{
               background: currentFinish === key 
                 ? 'linear-gradient(135deg, #3b82f6 0%, #6366f1 100%)'
